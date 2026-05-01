@@ -60,11 +60,57 @@ function detectIntent(messages: { role: string; content: string }[]): SearchHint
   return null;
 }
 
+const VISA_STATUS: Record<string, string> = {
+  tourist: "turista",
+  work_visa: "visto de trabalho",
+  permanent: "residência permanente",
+  student: "estudante",
+  regularizing: "regularizando",
+};
+const VISA_INTENT: Record<string, string> = {
+  tourist: "turista",
+  work: "trabalho",
+  student: "estudante",
+  permanent: "residência permanente",
+  unsure: "ainda não decidido",
+};
+const WORK_TYPE: Record<string, string> = {
+  employed: "empregado com carteira local",
+  freelancer: "autônomo / freelancer",
+  not_working: "ainda não trabalhando",
+};
+const BANK: Record<string, string> = {
+  yes: "sim, já tem conta local",
+  no: "não tem ainda",
+  in_progress: "abrindo",
+};
+const FAMILY: Record<string, string> = {
+  alone: "sozinho(a)",
+  with_partner: "com cônjuge",
+  with_family: "com filhos / família",
+};
+const LANGUAGE: Record<string, string> = {
+  basic: "básico",
+  manage: "intermediário",
+  fluent: "fluente",
+};
+const GOAL: Record<string, string> = {
+  documents: "resolver documentação (vistos, RNE, CPF, burocracia)",
+  job: "encontrar emprego",
+  bring_family: "trazer a família",
+  language: "aprender o idioma",
+  adapt: "adaptar-se à vida no país",
+  planning: "ainda se planejando",
+};
+const REMITTANCE: Record<string, string> = {
+  sometimes: "às vezes",
+  monthly: "todo mês",
+};
+
 function buildProfileContext(profile: UserProfile): string {
   const lines: string[] = [];
 
   if (profile.firstName) lines.push(`- Nome: ${profile.firstName}`);
-
   if (profile.journeyStage) lines.push(`- Situação: ${stageLabel(profile.journeyStage)}`);
 
   const place =
@@ -82,18 +128,18 @@ function buildProfileContext(profile: UserProfile): string {
     lines.push(`- ${label}: ${months[profile.arrivalMonth - 1]}/${profile.arrivalYear}`);
   }
 
-  if (profile.visaStatus) lines.push(`- Visto atual: ${profile.visaStatus}`);
-  if (profile.visaIntent) lines.push(`- Visto pretendido: ${profile.visaIntent}`);
-  if (profile.workType) lines.push(`- Trabalho: ${profile.workType}`);
-  if (profile.bankAccount) lines.push(`- Conta bancária local: ${profile.bankAccount}`);
-  if (profile.remittance && profile.remittance !== "never") lines.push(`- Envia remessas: ${profile.remittance}`);
-  if (profile.familyStatus) lines.push(`- Situação familiar: ${profile.familyStatus}`);
+  if (profile.visaStatus) lines.push(`- Visto atual: ${VISA_STATUS[profile.visaStatus] ?? profile.visaStatus}`);
+  if (profile.visaIntent) lines.push(`- Tipo de visto desejado: ${VISA_INTENT[profile.visaIntent] ?? profile.visaIntent}`);
+  if (profile.workType) lines.push(`- Trabalho: ${WORK_TYPE[profile.workType] ?? profile.workType}`);
+  if (profile.bankAccount) lines.push(`- Conta bancária local: ${BANK[profile.bankAccount] ?? profile.bankAccount}`);
+  if (profile.remittance && profile.remittance !== "never") lines.push(`- Envia remessas para o Brasil: ${REMITTANCE[profile.remittance] ?? profile.remittance}`);
+  if (profile.familyStatus) lines.push(`- Vai ${FAMILY[profile.familyStatus] ?? profile.familyStatus}`);
   if (profile.hasChildren) lines.push(`- Tem filhos`);
-  if (profile.languageLevel) lines.push(`- Idioma local: ${profile.languageLevel}`);
-  if (profile.mainGoal) lines.push(`- Objetivo principal: ${profile.mainGoal}`);
+  if (profile.languageLevel) lines.push(`- Nível no idioma local: ${LANGUAGE[profile.languageLevel] ?? profile.languageLevel}`);
+  if (profile.mainGoal) lines.push(`- Objetivo principal: ${GOAL[profile.mainGoal] ?? profile.mainGoal}`);
 
   if (lines.length === 0) return "";
-  return `\n\nPerfil do usuário (use estas informações para personalizar as respostas, sem mencionar explicitamente a menos que seja relevante):\n${lines.join("\n")}`;
+  return `\n\nPerfil do usuário (use estas informações para personalizar e contextualizar suas respostas — não é necessário mencioná-las explicitamente, apenas leve-as em conta):\n${lines.join("\n")}`;
 }
 
 const corsHeaders = {

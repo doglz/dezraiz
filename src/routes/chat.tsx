@@ -109,19 +109,61 @@ function MarkdownText({ text }: { text: string }) {
   return <div className="space-y-1.5">{nodes}</div>;
 }
 
-const SUGGESTIONS = [
-  "Como faço minha declaração de saída?",
-  "Qual o melhor app de remessa?",
-  "Como cadastrar no consulado?",
-];
-
-const WELCOME: ChatMessage = {
-  role: "ai",
-  text: "Olá! 👋 Posso te ajudar a planejar a mudança, organizar a viagem ou resolver a vida fora — documentos, impostos, remessas e o dia a dia. O que você quer saber?",
+const SUGGESTIONS_BY_STAGE: Record<string, string[]> = {
+  planning: [
+    "Quais documentos preciso para emigrar?",
+    "Como fazer a declaração de saída definitiva?",
+    "Como comparar vistos para meu destino?",
+  ],
+  traveling: [
+    "O que fazer primeiro ao chegar no país?",
+    "Como abrir conta bancária local?",
+    "Como me cadastrar no consulado brasileiro?",
+  ],
+  living: [
+    "Como enviar dinheiro pro Brasil com menos taxa?",
+    "Como manter o CPF regularizado morando fora?",
+    "Como declarar renda do exterior no IRPF?",
+  ],
+  default: [
+    "Como faço minha declaração de saída?",
+    "Qual o melhor app de remessa?",
+    "Como cadastrar no consulado?",
+  ],
 };
+
+function buildWelcome(user: import("@/lib/auth").User | null): ChatMessage {
+  const ob = user?.onboarding;
+  const name = user?.firstName ? `, ${user.firstName}` : "";
+
+  if (!ob) {
+    return {
+      role: "ai",
+      text: `Olá${name}! 👋 Posso te ajudar a planejar a mudança, organizar a viagem ou resolver a vida fora — documentos, impostos, remessas e o dia a dia. O que você quer saber?`,
+    };
+  }
+
+  const stage = ob.journeyStage;
+  const destination = ob.destinationCountry ?? ob.location?.country;
+
+  let text = "";
+  if (stage === "planning") {
+    text = `Olá${name}! 👋 Vi que você está planejando ir${destination ? ` para ${destination}` : " para o exterior"}. Posso ajudar com documentos, vistos, preparação financeira e tudo que você precisa resolver antes de partir. Por onde quer começar?`;
+  } else if (stage === "traveling") {
+    text = `Olá${name}! 👋 Você está${destination ? ` a caminho de ${destination}` : " em viagem"}! Posso ajudar com o que fazer ao chegar — conta bancária, consulado, moradia e burocracia local. O que precisa saber?`;
+  } else if (stage === "living") {
+    text = `Olá${name}! 👋 Que bom te ter aqui! Posso ajudar com remessas, declaração de renda, CPF, visto, moradia e o dia a dia de quem já mora fora${destination ? ` em ${destination}` : ""}. Como posso te ajudar?`;
+  } else {
+    text = `Olá${name}! 👋 Sou a IA da DEZRAIZ — aqui para ajudar com documentos, impostos, remessas e o dia a dia fora do Brasil. O que você quer saber?`;
+  }
+
+  return { role: "ai", text };
+}
 
 function Chat() {
   const { user } = useAuth();
+  const WELCOME = buildWelcome(user);
+  const SUGGESTIONS = SUGGESTIONS_BY_STAGE[user?.onboarding?.journeyStage ?? "default"] ?? SUGGESTIONS_BY_STAGE.default;
 
   // Sync userId para o storage logo que o contexto de auth tiver o user.
   useEffect(() => {
