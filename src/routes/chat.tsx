@@ -44,6 +44,7 @@ import {
   getChat,
   listChats,
   setActiveChatId,
+  setChatUserId,
   updateChat,
 } from "@/lib/chat-storage";
 import { SearchCards, type SearchCardsMeta } from "@/components/SearchCards";
@@ -122,6 +123,11 @@ const WELCOME: ChatMessage = {
 function Chat() {
   const { user } = useAuth();
 
+  // Sync userId para o storage logo que o contexto de auth tiver o user.
+  useEffect(() => {
+    setChatUserId(user?.id ?? null);
+  }, [user?.id]);
+
   // Sidebar list (metadata only, no messages)
   const [chats, setChats] = useState<ChatSession[]>([]);
   // Active chat with full messages
@@ -136,6 +142,7 @@ function Chat() {
   const [renameValue, setRenameValue] = useState("");
   const renameInputRef = useRef<HTMLInputElement>(null);
   const [messagePlaces, setMessagePlaces] = useState<Record<number, SearchCardsMeta>>({});
+  const skipFirstActiveIdEffect = useRef(true);
 
   // Feedback visual ao trocar/criar chat.
   const [flash, setFlash] = useState<{ kind: "switch" | "new"; label: string } | null>(null);
@@ -180,9 +187,13 @@ function Chat() {
     })();
   }, [user?.id]);
 
-  // Load messages when active ID changes (e.g. after switching chats).
+  // Load messages when active ID changes — skip first set (bootstrap handles it).
   useEffect(() => {
     if (!activeId) return;
+    if (skipFirstActiveIdEffect.current) {
+      skipFirstActiveIdEffect.current = false;
+      return;
+    }
     loadActiveChat(activeId);
     setMessagePlaces({});
   }, [activeId]);

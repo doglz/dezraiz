@@ -16,7 +16,12 @@ export interface ChatSession {
 // Active chat preference stays local — it's a UI preference, not user data.
 const ACTIVE_KEY = "dezraiz.chats.active.v1";
 
+// Cached user ID set by the UI layer after auth is confirmed — avoids getSession() timing issues.
+let _userId: string | null = null;
+export function setChatUserId(id: string | null) { _userId = id; }
+
 async function currentUserId(): Promise<string | null> {
+  if (_userId) return _userId;
   const { data: { session } } = await supabase.auth.getSession();
   return session?.user?.id ?? null;
 }
