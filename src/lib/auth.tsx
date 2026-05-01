@@ -340,15 +340,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     // Subscribe to auth state changes (login, logout, token refresh)
+    // We intentionally ignore USER_UPDATED and TOKEN_REFRESH events to
+    // avoid a race condition where syncAuthMetadata (called after setOnboarding)
+    // triggers a reload that temporarily clears user.onboarding mid-navigation.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      async (event, session) => {
         authUserRef.current = session?.user ?? null;
-        if (session) {
-          const u = await loadUserData(session.user);
-          setUser(u); // null means auto-signout already triggered
-        } else {
+        // Only reload user data on real session transitions
+        if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
+          if (session) {
+            const u = await loadUserData(session.user);
+            setUser(u);
+          }
+        } else if (event === "SIGNED_OUT") {
           setUser(null);
         }
+        // TOKEN_REFRESH, USER_UPDATED, PASSWORD_RECOVERY etc. are ignored
+        // to prevent overwriting in-memory state that was already updated
+        // optimistically (e.g. right after setOnboarding saves to the DB).
       },
     );
 

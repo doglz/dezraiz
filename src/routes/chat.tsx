@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+﻿import { createFileRoute } from "@tanstack/react-router";
 import {
   Send,
   Sparkles,
@@ -57,7 +57,7 @@ export const Route = createFileRoute("/chat")({
     ...seo({
       title: "Chat IA",
       description:
-        "Tire dúvidas sobre documentos, impostos, remessas e o dia a dia — esteja você planejando ir, viajando ou já morando fora — com a IA da DEZRAIZ.",
+        "Tire dÃºvidas sobre documentos, impostos, remessas e o dia a dia â€” esteja vocÃª planejando ir, viajando ou jÃ¡ morando fora â€” com a IA da DEZRAIZ.",
       path: "/chat",
     }),
   }),
@@ -121,7 +121,7 @@ function MarkdownText({ text }: { text: string }) {
   lines.forEach((line, idx) => {
     const trimmed = line.trim();
     const heading = trimmed.match(/^#{1,3}\s+(.+)$/);
-    const list = line.match(/^(\s*)([-*•]|\d+[.)])\s+(.+)$/);
+    const list = line.match(/^(\s*)([-*â€¢]|\d+[.)])\s+(.+)$/);
 
     if (list) {
       const nextKind = /^\d/.test(list[2]) ? "ordered" : "unordered";
@@ -158,12 +158,12 @@ function MarkdownText({ text }: { text: string }) {
 const SUGGESTIONS_BY_STAGE: Record<string, string[]> = {
   planning: [
     "Quais documentos preciso para emigrar?",
-    "Como fazer a declaração de saída definitiva?",
+    "Como fazer a declaraÃ§Ã£o de saÃ­da definitiva?",
     "Como comparar vistos para meu destino?",
   ],
   traveling: [
-    "O que fazer primeiro ao chegar no país?",
-    "Como abrir conta bancária local?",
+    "O que fazer primeiro ao chegar no paÃ­s?",
+    "Como abrir conta bancÃ¡ria local?",
     "Como me cadastrar no consulado brasileiro?",
   ],
   living: [
@@ -172,38 +172,38 @@ const SUGGESTIONS_BY_STAGE: Record<string, string[]> = {
     "Como declarar renda do exterior no IRPF?",
   ],
   default: [
-    "Como faço minha declaração de saída?",
+    "Como faÃ§o minha declaraÃ§Ã£o de saÃ­da?",
     "Qual o melhor app de remessa?",
     "Como cadastrar no consulado?",
   ],
 };
 
 const SEARCH_CATALOG: Record<string, { label: string; emoji: string }> = {
-  restaurant: { label: "Restaurantes", emoji: "🍽️" },
-  supermarket: { label: "Supermercados", emoji: "🛒" },
-  real_estate: { label: "Moradia", emoji: "🏠" },
-  hotel: { label: "Hotéis e Pousadas", emoji: "🏨" },
-  hospital: { label: "Hospitais e Clínicas", emoji: "🏥" },
-  pharmacy: { label: "Farmácias", emoji: "💊" },
-  dentist: { label: "Dentistas", emoji: "🦷" },
-  veterinary: { label: "Veterinários", emoji: "🐾" },
-  bank: { label: "Bancos", emoji: "🏦" },
-  remittance: { label: "Remessas e Câmbio", emoji: "💸" },
-  car_rental: { label: "Aluguel de Carro", emoji: "🚗" },
-  gas_station: { label: "Postos de Gasolina", emoji: "⛽" },
-  transit: { label: "Transporte Público", emoji: "🚇" },
-  park: { label: "Parques e Praças", emoji: "🌳" },
-  gym: { label: "Academias", emoji: "💪" },
-  shopping: { label: "Shopping e Lojas", emoji: "🛍️" },
-  beauty: { label: "Salões e Barbearias", emoji: "✂️" },
-  worship: { label: "Igrejas e Templos", emoji: "🙏" },
-  school: { label: "Escolas", emoji: "🏫" },
-  laundry: { label: "Lavanderias", emoji: "👕" },
-  consulate: { label: "Consulados e Cartórios", emoji: "🏛️" },
-  coworking: { label: "Coworkings", emoji: "💻" },
-  library: { label: "Bibliotecas", emoji: "📚" },
-  police: { label: "Delegacias", emoji: "🚔" },
-  airport: { label: "Aeroportos", emoji: "✈️" },
+  restaurant: { label: "Restaurantes", emoji: "ðŸ½ï¸" },
+  supermarket: { label: "Supermercados", emoji: "ðŸ›’" },
+  real_estate: { label: "Moradia", emoji: "ðŸ " },
+  hotel: { label: "HotÃ©is e Pousadas", emoji: "ðŸ¨" },
+  hospital: { label: "Hospitais e ClÃ­nicas", emoji: "ðŸ¥" },
+  pharmacy: { label: "FarmÃ¡cias", emoji: "ðŸ’Š" },
+  dentist: { label: "Dentistas", emoji: "ðŸ¦·" },
+  veterinary: { label: "VeterinÃ¡rios", emoji: "ðŸ¾" },
+  bank: { label: "Bancos", emoji: "ðŸ¦" },
+  remittance: { label: "Remessas e CÃ¢mbio", emoji: "ðŸ’¸" },
+  car_rental: { label: "Aluguel de Carro", emoji: "ðŸš—" },
+  gas_station: { label: "Postos de Gasolina", emoji: "â›½" },
+  transit: { label: "Transporte PÃºblico", emoji: "ðŸš‡" },
+  park: { label: "Parques e PraÃ§as", emoji: "ðŸŒ³" },
+  gym: { label: "Academias", emoji: "ðŸ’ª" },
+  shopping: { label: "Shopping e Lojas", emoji: "ðŸ›ï¸" },
+  beauty: { label: "SalÃµes e Barbearias", emoji: "âœ‚ï¸" },
+  worship: { label: "Igrejas e Templos", emoji: "ðŸ™" },
+  school: { label: "Escolas", emoji: "ðŸ«" },
+  laundry: { label: "Lavanderias", emoji: "ðŸ‘•" },
+  consulate: { label: "Consulados e CartÃ³rios", emoji: "ðŸ›ï¸" },
+  coworking: { label: "Coworkings", emoji: "ðŸ’»" },
+  library: { label: "Bibliotecas", emoji: "ðŸ“š" },
+  police: { label: "Delegacias", emoji: "ðŸš”" },
+  airport: { label: "Aeroportos", emoji: "âœˆï¸" },
 };
 
 const MAPA_RE = /\n?\s*\[MAPA:([a-z_]+)\]\s*$/;
@@ -228,7 +228,7 @@ function buildWelcome(user: import("@/lib/auth").User | null): ChatMessage {
   if (!ob) {
     return {
       role: "ai",
-      text: `Olá${name}! 👋 Posso te ajudar a planejar a mudança, organizar a viagem ou resolver a vida fora — documentos, impostos, remessas e o dia a dia. O que você quer saber?`,
+      text: `OlÃ¡${name}! ðŸ‘‹ Posso te ajudar a planejar a mudanÃ§a, organizar a viagem ou resolver a vida fora â€” documentos, impostos, remessas e o dia a dia. O que vocÃª quer saber?`,
     };
   }
 
@@ -237,13 +237,13 @@ function buildWelcome(user: import("@/lib/auth").User | null): ChatMessage {
 
   let text = "";
   if (stage === "planning") {
-    text = `Olá${name}! 👋 Vi que você está planejando ir${destination ? ` para ${destination}` : " para o exterior"}. Posso ajudar com documentos, vistos, preparação financeira e tudo que você precisa resolver antes de partir. Por onde quer começar?`;
+    text = `OlÃ¡${name}! ðŸ‘‹ Vi que vocÃª estÃ¡ planejando ir${destination ? ` para ${destination}` : " para o exterior"}. Posso ajudar com documentos, vistos, preparaÃ§Ã£o financeira e tudo que vocÃª precisa resolver antes de partir. Por onde quer comeÃ§ar?`;
   } else if (stage === "traveling") {
-    text = `Olá${name}! 👋 Você está${destination ? ` a caminho de ${destination}` : " em viagem"}! Posso ajudar com o que fazer ao chegar — conta bancária, consulado, moradia e burocracia local. O que precisa saber?`;
+    text = `OlÃ¡${name}! ðŸ‘‹ VocÃª estÃ¡${destination ? ` a caminho de ${destination}` : " em viagem"}! Posso ajudar com o que fazer ao chegar â€” conta bancÃ¡ria, consulado, moradia e burocracia local. O que precisa saber?`;
   } else if (stage === "living") {
-    text = `Olá${name}! 👋 Que bom te ter aqui! Posso ajudar com remessas, declaração de renda, CPF, visto, moradia e o dia a dia de quem já mora fora${destination ? ` em ${destination}` : ""}. Como posso te ajudar?`;
+    text = `OlÃ¡${name}! ðŸ‘‹ Que bom te ter aqui! Posso ajudar com remessas, declaraÃ§Ã£o de renda, CPF, visto, moradia e o dia a dia de quem jÃ¡ mora fora${destination ? ` em ${destination}` : ""}. Como posso te ajudar?`;
   } else {
-    text = `Olá${name}! 👋 Sou a IA da DEZRAIZ — aqui para ajudar com documentos, impostos, remessas e o dia a dia fora do Brasil. O que você quer saber?`;
+    text = `OlÃ¡${name}! ðŸ‘‹ Sou a IA da DEZRAIZ â€” aqui para ajudar com documentos, impostos, remessas e o dia a dia fora do Brasil. O que vocÃª quer saber?`;
   }
 
   return { role: "ai", text };
@@ -254,12 +254,15 @@ function Chat() {
   const WELCOME = buildWelcome(user);
   const SUGGESTIONS = SUGGESTIONS_BY_STAGE[user?.onboarding?.journeyStage ?? "default"] ?? SUGGESTIONS_BY_STAGE.default;
 
-  // Current GPS location — fetched once on mount, refined as accuracy improves
+  // Current GPS location -- fetched once on mount, refined as accuracy improves.
+  // gpsPromiseRef stores the in-flight Promise so runNearbySearch can await it
+  // instead of calling getUserCoords() a second time (which may return null).
   const gpsRef = useRef<{ lat: number; lng: number; accuracy?: number; city?: string; country?: string } | null>(null);
+  const gpsPromiseRef = useRef<Promise<{ lat: number; lng: number } | null> | null>(null);
 
   useEffect(() => {
-    getUserCoords().then(async (coords) => {
-      if (!coords) return;
+    const promise = getUserCoords().then(async (coords) => {
+      if (!coords) return null;
       gpsRef.current = coords;
       // Reverse-geocode to get city/country for the AI context
       try {
@@ -270,8 +273,10 @@ function Chat() {
           city: a.city ?? a.town ?? a.village,
           country: a.country,
         };
-      } catch { /* ignore — raw coords still useful */ }
-    }).catch(() => {});
+      } catch { /* ignore -- raw coords still useful */ }
+      return gpsRef.current;
+    }).catch(() => null);
+    gpsPromiseRef.current = promise;
   }, []);
 
   // Sync userId para o storage logo que o contexto de auth tiver o user.
@@ -360,7 +365,12 @@ function Chat() {
     }
 
     try {
+      // Await the in-flight GPS promise (started on mount) so we reuse the
+      // same geolocation request instead of firing a second one that may fail.
       let coords: { lat: number; lng: number } | null = gpsRef.current;
+      if (!coords && gpsPromiseRef.current) {
+        coords = await gpsPromiseRef.current;
+      }
       if (!coords) {
         coords = await getUserCoords();
         if (coords) gpsRef.current = { ...gpsRef.current, ...coords };
@@ -405,9 +415,11 @@ function Chat() {
     void updateChat(activeChat.id, { messages: cleanedMessages }).catch(() => {});
   }, [activeChat?.id]);
 
-  // Bootstrap: carrega lista quando o user estiver disponível no contexto de auth.
+  // Bootstrap: carrega lista quando o user estiver disponivel no contexto de auth.
+  // setChatUserId eh chamado antes do listChats() para garantir o ID correto.
   useEffect(() => {
-    if (!user) return;
+    if (!user?.id) return;
+    setChatUserId(user.id);
     (async () => {
       const all = await listChats();
       if (all.length === 0) {
@@ -426,7 +438,7 @@ function Chat() {
     })();
   }, [user?.id]);
 
-  // Load messages when active ID changes — skip first set (bootstrap handles it).
+  // Load messages when active ID changes â€” skip first set (bootstrap handles it).
   useEffect(() => {
     if (!activeId) return;
     if (skipFirstActiveIdEffect.current) {
@@ -457,7 +469,7 @@ function Chat() {
     requestAnimationFrame(() => scrollToBottom("auto"));
 
     try {
-      // Build messages for the API — Anthropic requires first message to be "user"
+      // Build messages for the API â€” Anthropic requires first message to be "user"
       const mapped = userMessages
         .filter((m) => m.text.length > 0)
         .map((m) => ({ role: m.role === "ai" ? "assistant" : "user", content: m.text }));
@@ -469,7 +481,7 @@ function Chat() {
       const { data: { session } } = await (await import("@/lib/supabase")).supabase.auth.getSession();
       const token = session?.access_token ?? supabaseKey;
 
-      // Perfil do usuário para personalizar a IA
+      // Perfil do usuÃ¡rio para personalizar a IA
       const ob = user?.onboarding;
       const gps = gpsRef.current;
       const userProfile = ob ? {
@@ -559,7 +571,7 @@ function Chat() {
       // Derive and persist title from first user message if not yet set
       const firstUser = finalMessages.find(m => m.role === "user");
       const titlePatch = (!activeChat.title && firstUser)
-        ? { title: firstUser.text.trim().replace(/\s+/g, " ").slice(0, 40) + (firstUser.text.length > 40 ? "…" : "") }
+        ? { title: firstUser.text.trim().replace(/\s+/g, " ").slice(0, 40) + (firstUser.text.length > 40 ? "â€¦" : "") }
         : {};
       await updateChat(activeChat.id, { messages: finalMessages, ...titlePatch });
 
@@ -574,7 +586,7 @@ function Chat() {
         const msgs = [...prev.messages];
         msgs[msgs.length - 1] = {
           role: "ai",
-          text: "Não consegui conectar com a IA. Tente novamente.",
+          text: "NÃ£o consegui conectar com a IA. Tente novamente.",
         };
         return { ...prev, messages: msgs };
       });
@@ -584,7 +596,7 @@ function Chat() {
     }
   };
 
-  // Verdadeiro se a conversa só tem o welcome (nenhuma mensagem do usuário).
+  // Verdadeiro se a conversa sÃ³ tem o welcome (nenhuma mensagem do usuÃ¡rio).
   const isChatUnused = (chat: ChatSession | null) =>
     !!chat && !chat.messages.some((m) => m.role === "user");
 
@@ -592,7 +604,7 @@ function Chat() {
     if (isChatUnused(activeChat)) {
       setDrawerOpen(false);
       setInput("");
-      triggerFlash("switch", "Já está em uma conversa nova");
+      triggerFlash("switch", "JÃ¡ estÃ¡ em uma conversa nova");
       return;
     }
     try {
@@ -606,7 +618,7 @@ function Chat() {
       setInput("");
       triggerFlash("new", "Nova conversa criada");
     } catch {
-      setChatError("Não foi possível criar a conversa. Verifique sua conexão.");
+      setChatError("NÃ£o foi possÃ­vel criar a conversa. Verifique sua conexÃ£o.");
     }
   };
 
@@ -711,7 +723,7 @@ function Chat() {
             {activeChat ? chatTitle(activeChat) : "Chat IA"}
           </h1>
           <p className="text-[12px] text-[var(--color-muted-foreground)]">
-            Sua dúvida, nossa resposta
+            Sua dÃºvida, nossa resposta
           </p>
         </div>
         {activeChat && (
@@ -727,14 +739,14 @@ function Chat() {
         <button
           type="button"
           onClick={() => setDrawerOpen(true)}
-          aria-label="Histórico de conversas"
+          aria-label="HistÃ³rico de conversas"
           className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-primary-soft)] text-[var(--color-primary)] transition-transform active:scale-95"
         >
           <Menu className="h-[18px] w-[18px]" strokeWidth={2.2} />
         </button>
       </header>
 
-      {/* Toast flutuante de troca/criação */}
+      {/* Toast flutuante de troca/criaÃ§Ã£o */}
       {flash && (
         <div
           role="status"
@@ -751,7 +763,7 @@ function Chat() {
         </div>
       )}
 
-      {/* Conteúdo: empty state quando não há conversa ativa */}
+      {/* ConteÃºdo: empty state quando nÃ£o hÃ¡ conversa ativa */}
       {!activeChat ? (
         <div
           className="flex flex-1 animate-fade-in flex-col items-center justify-center px-6 text-center"
@@ -767,7 +779,7 @@ function Chat() {
             Nenhuma conversa ainda
           </h2>
           <p className="mt-2 max-w-[280px] text-[13.5px] leading-relaxed text-[var(--color-muted-foreground)]">
-            Comece uma conversa com a IA da DEZRAIZ para tirar dúvidas sobre
+            Comece uma conversa com a IA da DEZRAIZ para tirar dÃºvidas sobre
             documentos, impostos, remessas e o dia a dia fora do Brasil.
           </p>
           <button
@@ -837,7 +849,7 @@ function Chat() {
             {messages.length === 1 && (
               <div className="space-y-2.5 pt-5">
                 <p className="px-2 text-[11px] font-bold uppercase tracking-wider text-[var(--color-muted-foreground)]">
-                  Sugestões
+                  SugestÃµes
                 </p>
                 {SUGGESTIONS.map((s) => (
                   <button
@@ -882,7 +894,7 @@ function Chat() {
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={aiStreaming ? "IA respondendo…" : "Pergunte algo..."}
+                placeholder={aiStreaming ? "IA respondendoâ€¦" : "Pergunte algo..."}
                 disabled={aiStreaming}
                 className="h-10 flex-1 bg-transparent text-[14px] outline-none placeholder:text-[var(--color-muted-foreground)] disabled:cursor-not-allowed"
               />
@@ -899,7 +911,7 @@ function Chat() {
         </>
       )}
 
-      {/* Drawer de histórico */}
+      {/* Drawer de histÃ³rico */}
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
         <SheetContent
           side="left"
@@ -910,7 +922,7 @@ function Chat() {
               <Sparkles className="h-4 w-4 text-[var(--color-primary)]" />
               Suas conversas
             </SheetTitle>
-            <SheetDescription className="sr-only">Histórico de conversas com a IA</SheetDescription>
+            <SheetDescription className="sr-only">HistÃ³rico de conversas com a IA</SheetDescription>
           </SheetHeader>
 
           <div className="px-5 py-4">
@@ -1034,7 +1046,7 @@ function Chat() {
         </SheetContent>
       </Sheet>
 
-      {/* Confirmação de exclusão */}
+      {/* ConfirmaÃ§Ã£o de exclusÃ£o */}
       <Dialog
         open={confirmDeleteId !== null}
         onOpenChange={(open) => !open && setConfirmDeleteId(null)}
@@ -1045,7 +1057,7 @@ function Chat() {
               Excluir esta conversa?
             </DialogTitle>
             <DialogDescription className="mt-1.5 text-[13px] text-[var(--color-muted-foreground)]">
-              Esta ação não pode ser desfeita. As mensagens serão removidas
+              Esta aÃ§Ã£o nÃ£o pode ser desfeita. As mensagens serÃ£o removidas
               permanentemente.
             </DialogDescription>
           </div>
@@ -1070,3 +1082,4 @@ function Chat() {
     </div>
   );
 }
+
