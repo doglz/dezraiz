@@ -592,7 +592,7 @@ function Chat() {
               send(input);
             }}
             className="fixed inset-x-0 z-40 mx-auto max-w-screen-sm px-5 pb-0 pt-2"
-            style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)" }}
+            style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 36px)" }}
           >
             <div className={
               "flex items-center gap-2 rounded-full bg-[var(--color-card)] py-2 pl-5 pr-2 shadow-[var(--shadow-elev-3)] transition-opacity " +
