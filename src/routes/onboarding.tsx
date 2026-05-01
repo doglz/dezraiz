@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { isValidPhoneNumber } from "libphonenumber-js";
 import { Loader2, MapPin, Check, Baby, Ban, Lock, ChevronDown } from "lucide-react";
@@ -198,6 +198,7 @@ function clearOnboardingDraft(): void {
 
 function Onboarding() {
   const { user, setOnboarding, updateProfile, logout } = useAuth();
+  const navigate = useNavigate();
   const draft = useMemo(() => loadOnboardingDraft(), []);
 
   const [step, setStep] = useState(() => {
@@ -421,8 +422,13 @@ function Onboarding() {
         housing: journeyStage === "living" ? housing ?? undefined : undefined,
       });
       clearOnboardingDraft();
-      // Hard redirect so RequireAuth re-evaluates with the freshly-set user state
-      window.location.href = "/";
+      setSubmitting(false);
+      await navigate({ to: "/", replace: true });
+      window.setTimeout(() => {
+        if (window.location.pathname === "/onboarding") {
+          window.location.assign("/");
+        }
+      }, 300);
     } catch (err) {
       setSubmitting(false);
       const message = err instanceof Error ? err.message : "";

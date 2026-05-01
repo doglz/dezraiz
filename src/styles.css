@@ -287,6 +287,10 @@ html, body {
   padding-bottom: calc(84px + env(safe-area-inset-bottom));
 }
 
+.app-shell-home-content {
+  padding-bottom: calc(36px + env(safe-area-inset-bottom));
+}
+
 .bottom-nav-safe {
   padding-bottom: env(safe-area-inset-bottom);
 }

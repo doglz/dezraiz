@@ -5,6 +5,7 @@ export type SearchPlace = {
   name: string;
   address: string;
   distance?: string;
+  imageUrl?: string;
   lat: number;
   lng: number;
 };
@@ -62,7 +63,17 @@ export function SearchCards({ places, label, emoji, loading, noLocation }: Searc
     );
   }
 
-  if (places.length === 0) return null;
+  if (places.length === 0) {
+    return (
+      <div className="mt-3 flex items-center gap-2 rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3">
+        <span className="text-xl">{emoji}</span>
+        <p className="text-[13px] text-[var(--color-muted-foreground)]">
+          Não encontrei {label.toLowerCase()} próximos agora. Tente buscar por
+          outro tipo de lugar.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-3">
@@ -80,9 +91,21 @@ export function SearchCards({ places, label, emoji, loading, noLocation }: Searc
           >
             {/* Header */}
             <div
-              className={`flex h-20 items-center justify-center bg-gradient-to-br ${gradient} relative`}
+              className={`relative flex h-20 items-center justify-center overflow-hidden bg-gradient-to-br ${gradient}`}
             >
-              <span className="text-4xl">{emoji}</span>
+              {place.imageUrl ? (
+                <img
+                  src={place.imageUrl}
+                  alt=""
+                  loading="lazy"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <span className="text-4xl">{emoji}</span>
+              )}
+              <span className="absolute left-2 top-2 rounded-full bg-[var(--color-card)]/95 px-2 py-0.5 text-sm shadow-[var(--shadow-elev-1)]">
+                {emoji}
+              </span>
               {place.distance && (
                 <span className="absolute bottom-2 right-2 rounded-full bg-[var(--color-card)] px-2 py-0.5 text-[10px] font-bold text-[var(--color-foreground)]">
                   {place.distance}

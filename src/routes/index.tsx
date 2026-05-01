@@ -117,7 +117,7 @@ function Home() {
         initial="initial"
         animate="animate"
         variants={staggerContainer(reduce)}
-        className="mt-8"
+        className="mt-6"
       >
         <motion.div variants={staggerItem(reduce)}>
           <Link
@@ -134,7 +134,7 @@ function Home() {
                 <ArrowUpRight className="h-4 w-4" />
               </span>
             </div>
-            <h2 className="mt-12 text-[28px] font-extrabold leading-[1.1] tracking-[-0.025em]">
+            <h2 className="mt-10 text-[28px] font-extrabold leading-[1.1] tracking-[-0.025em]">
               Capture suas dúvidas.
               <br />
               <span className="text-white/60">Antes, durante e depois da mudança.</span>
@@ -143,7 +143,7 @@ function Home() {
               Pergunte sobre vistos, impostos, remessas e o dia a dia. Em
               português, do jeito certo.
             </p>
-            <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[13px] font-semibold text-[var(--color-ink)]">
+            <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[13px] font-semibold text-[var(--color-ink)]">
               <MessageCircle className="h-4 w-4" />
               Abrir chat
             </div>
@@ -202,7 +202,7 @@ function Home() {
       </motion.section>
 
       {/* Em breve */}
-      <section className="mt-8 pb-2">
+      <section className="mt-6">
         <div className="mb-3 flex items-center justify-between px-1">
           <h3 className="text-[13px] font-bold uppercase tracking-wider text-[var(--color-muted-foreground)]">
             Em breve

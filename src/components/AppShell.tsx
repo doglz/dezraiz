@@ -1,5 +1,5 @@
 import { useEffect, type ReactNode } from "react";
-import { useRouter } from "@tanstack/react-router";
+import { useLocation, useRouter } from "@tanstack/react-router";
 import { BottomNav } from "@/components/BottomNav";
 import { DesktopGate } from "@/components/DesktopGate";
 
@@ -12,6 +12,8 @@ import { DesktopGate } from "@/components/DesktopGate";
  */
 export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const location = useLocation();
+  const isHome = location.pathname === "/";
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -33,7 +35,12 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <DesktopGate>
       <div className="app-shell">
-        <main className="app-shell-content mx-auto w-full max-w-screen-sm px-5 pt-6">
+        <main
+          className={
+            (isHome ? "app-shell-home-content" : "app-shell-content") +
+            " mx-auto w-full max-w-screen-sm px-5 pt-6"
+          }
+        >
           {children}
         </main>
         <BottomNav />

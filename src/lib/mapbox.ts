@@ -76,6 +76,10 @@ export async function searchNearby(
       distance: kmBetween(coords.lat, coords.lng, lat, lng),
       lat,
       lng,
+      imageUrl:
+        `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static` +
+        `/pin-s+12b76a(${lng},${lat})/${lng},${lat},15,0/384x192@2x` +
+        `?access_token=${token}`,
     };
   });
 }

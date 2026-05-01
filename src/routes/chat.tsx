@@ -3,6 +3,7 @@ import {
   Send,
   Sparkles,
   ArrowLeft,
+  ArrowDown,
   Menu,
   Plus,
   Trash2,
@@ -80,34 +81,78 @@ function renderInline(text: string): React.ReactNode {
   );
 }
 
+type ListItem = {
+  depth: number;
+  text: string;
+};
+
 function MarkdownText({ text }: { text: string }) {
   const lines = text.split("\n");
   const nodes: React.ReactNode[] = [];
-  let listItems: string[] = [];
+  let listItems: ListItem[] = [];
+  let listKind: "ordered" | "unordered" | null = null;
 
   const flushList = (key: number) => {
     if (listItems.length === 0) return;
+    const ListTag = listKind === "ordered" ? "ol" : "ul";
     nodes.push(
-      <ul key={`ul-${key}`} className="mt-1 space-y-0.5 pl-4">
+      <ListTag
+        key={`list-${key}`}
+        className={
+          "mt-2 space-y-1 pl-5 " +
+          (listKind === "ordered" ? "list-decimal" : "list-disc")
+        }
+      >
         {listItems.map((item, j) => (
-          <li key={j} className="list-disc">{renderInline(item)}</li>
+          <li
+            key={j}
+            className="leading-relaxed"
+            style={{ marginLeft: item.depth ? `${item.depth * 12}px` : undefined }}
+          >
+            {renderInline(item.text)}
+          </li>
         ))}
-      </ul>
+      </ListTag>
     );
     listItems = [];
+    listKind = null;
   };
 
   lines.forEach((line, idx) => {
-    if (/^[*-] /.test(line)) {
-      listItems.push(line.slice(2));
-    } else {
-      flushList(idx);
-      if (line.trim()) nodes.push(<p key={`p-${idx}`}>{renderInline(line)}</p>);
+    const trimmed = line.trim();
+    const heading = trimmed.match(/^#{1,3}\s+(.+)$/);
+    const list = line.match(/^(\s*)([-*•]|\d+[.)])\s+(.+)$/);
+
+    if (list) {
+      const nextKind = /^\d/.test(list[2]) ? "ordered" : "unordered";
+      if (listKind && listKind !== nextKind) flushList(idx);
+      listKind = nextKind;
+      listItems.push({
+        depth: Math.min(3, Math.floor(list[1].replace(/\t/g, "  ").length / 2)),
+        text: list[3],
+      });
+      return;
     }
+
+    flushList(idx);
+
+    if (heading) {
+      nodes.push(
+        <h3
+          key={`h-${idx}`}
+          className="mt-3 text-[14px] font-bold leading-snug text-[var(--color-foreground)] first:mt-0"
+        >
+          {renderInline(heading[1])}
+        </h3>
+      );
+      return;
+    }
+
+    if (trimmed) nodes.push(<p key={`p-${idx}`}>{renderInline(trimmed)}</p>);
   });
   flushList(lines.length);
 
-  return <div className="space-y-1.5">{nodes}</div>;
+  return <div className="space-y-2 break-words">{nodes}</div>;
 }
 
 const SUGGESTIONS_BY_STAGE: Record<string, string[]> = {
@@ -132,6 +177,49 @@ const SUGGESTIONS_BY_STAGE: Record<string, string[]> = {
     "Como cadastrar no consulado?",
   ],
 };
+
+const SEARCH_CATALOG: Record<string, { label: string; emoji: string }> = {
+  restaurant: { label: "Restaurantes", emoji: "🍽️" },
+  supermarket: { label: "Supermercados", emoji: "🛒" },
+  real_estate: { label: "Moradia", emoji: "🏠" },
+  hotel: { label: "Hotéis e Pousadas", emoji: "🏨" },
+  hospital: { label: "Hospitais e Clínicas", emoji: "🏥" },
+  pharmacy: { label: "Farmácias", emoji: "💊" },
+  dentist: { label: "Dentistas", emoji: "🦷" },
+  veterinary: { label: "Veterinários", emoji: "🐾" },
+  bank: { label: "Bancos", emoji: "🏦" },
+  remittance: { label: "Remessas e Câmbio", emoji: "💸" },
+  car_rental: { label: "Aluguel de Carro", emoji: "🚗" },
+  gas_station: { label: "Postos de Gasolina", emoji: "⛽" },
+  transit: { label: "Transporte Público", emoji: "🚇" },
+  park: { label: "Parques e Praças", emoji: "🌳" },
+  gym: { label: "Academias", emoji: "💪" },
+  shopping: { label: "Shopping e Lojas", emoji: "🛍️" },
+  beauty: { label: "Salões e Barbearias", emoji: "✂️" },
+  worship: { label: "Igrejas e Templos", emoji: "🙏" },
+  school: { label: "Escolas", emoji: "🏫" },
+  laundry: { label: "Lavanderias", emoji: "👕" },
+  consulate: { label: "Consulados e Cartórios", emoji: "🏛️" },
+  coworking: { label: "Coworkings", emoji: "💻" },
+  library: { label: "Bibliotecas", emoji: "📚" },
+  police: { label: "Delegacias", emoji: "🚔" },
+  airport: { label: "Aeroportos", emoji: "✈️" },
+};
+
+const MAPA_RE = /\n?\s*\[MAPA:([a-z_]+)\]\s*$/;
+type SearchHint = { category: string; label: string; emoji: string };
+
+function extractMapHint(text: string): { cleanText: string; searchHint: SearchHint | null } {
+  const match = text.match(MAPA_RE);
+  if (!match) return { cleanText: text, searchHint: null };
+
+  const category = match[1];
+  const meta = SEARCH_CATALOG[category];
+  return {
+    cleanText: text.slice(0, match.index ?? text.length).replace(/\s+$/, ""),
+    searchHint: meta ? { category, ...meta } : null,
+  };
+}
 
 function buildWelcome(user: import("@/lib/auth").User | null): ChatMessage {
   const ob = user?.onboarding;
@@ -206,6 +294,9 @@ function Chat() {
   const renameInputRef = useRef<HTMLInputElement>(null);
   const [messagePlaces, setMessagePlaces] = useState<Record<number, SearchCardsMeta>>({});
   const skipFirstActiveIdEffect = useRef(true);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const isNearBottomRef = useRef(true);
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
 
   // Feedback visual ao trocar/criar chat.
   const [flash, setFlash] = useState<{ kind: "switch" | "new"; label: string } | null>(null);
@@ -228,6 +319,91 @@ function Chat() {
     const chat = await getChat(id);
     setActiveChat(chat);
   };
+
+  const updateBottomState = () => {
+    const doc = document.documentElement;
+    const distanceFromBottom = doc.scrollHeight - window.scrollY - window.innerHeight;
+    isNearBottomRef.current = distanceFromBottom < 180;
+    setShowScrollToBottom(!!activeChat && distanceFromBottom > 360);
+  };
+
+  const scrollToBottom = (behavior: ScrollBehavior = "smooth") => {
+    bottomRef.current?.scrollIntoView({ behavior, block: "end" });
+    isNearBottomRef.current = true;
+    setShowScrollToBottom(false);
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", updateBottomState, { passive: true });
+    window.addEventListener("resize", updateBottomState);
+    updateBottomState();
+
+    return () => {
+      window.removeEventListener("scroll", updateBottomState);
+      window.removeEventListener("resize", updateBottomState);
+    };
+  }, [activeChat?.id]);
+
+  useEffect(() => {
+    if (!activeChat) return;
+    requestAnimationFrame(() => scrollToBottom("auto"));
+  }, [activeChat?.id]);
+
+  const runNearbySearch = async (messageIndex: number, hint: SearchHint) => {
+    const { category, label, emoji } = hint;
+    setMessagePlaces((prev) => ({ ...prev, [messageIndex]: { places: [], label, emoji, loading: true } }));
+
+    const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
+    if (!mapboxToken) {
+      setMessagePlaces((prev) => ({ ...prev, [messageIndex]: { places: [], label, emoji, loading: false, noLocation: true } }));
+      return;
+    }
+
+    try {
+      let coords: { lat: number; lng: number } | null = gpsRef.current;
+      if (!coords) {
+        coords = await getUserCoords();
+        if (coords) gpsRef.current = { ...gpsRef.current, ...coords };
+      }
+
+      if (!coords) {
+        const ob = user?.onboarding;
+        if (ob?.location?.latitude && ob?.location?.longitude) {
+          coords = { lat: ob.location.latitude, lng: ob.location.longitude };
+        }
+      }
+
+      if (coords) {
+        const places = await searchNearby(category, coords, mapboxToken);
+        setMessagePlaces((prev) => ({ ...prev, [messageIndex]: { places, label, emoji, loading: false } }));
+      } else {
+        setMessagePlaces((prev) => ({ ...prev, [messageIndex]: { places: [], label, emoji, loading: false, noLocation: true } }));
+      }
+    } catch {
+      setMessagePlaces((prev) => ({ ...prev, [messageIndex]: { places: [], label, emoji, loading: false, noLocation: true } }));
+    }
+  };
+
+  useEffect(() => {
+    if (!activeChat?.id) return;
+
+    const cleanedMessages = activeChat.messages.map((message) => {
+      if (message.role !== "ai") return message;
+      const { cleanText } = extractMapHint(message.text);
+      return cleanText === message.text ? message : { ...message, text: cleanText };
+    });
+
+    const changed = cleanedMessages.some((message, index) => message.text !== activeChat.messages[index]?.text);
+    activeChat.messages.forEach((message, index) => {
+      if (message.role !== "ai" || messagePlaces[index]) return;
+      const { searchHint } = extractMapHint(message.text);
+      if (searchHint) void runNearbySearch(index, searchHint);
+    });
+
+    if (!changed) return;
+    setActiveChat((prev) => (prev?.id === activeChat.id ? { ...prev, messages: cleanedMessages } : prev));
+    void updateChat(activeChat.id, { messages: cleanedMessages }).catch(() => {});
+  }, [activeChat?.id]);
 
   // Bootstrap: carrega lista quando o user estiver disponível no contexto de auth.
   useEffect(() => {
@@ -278,6 +454,7 @@ function Chat() {
     setActiveChat((prev) => prev ? { ...prev, messages: withPlaceholder } : prev);
     setInput("");
     setAiStreaming(true);
+    requestAnimationFrame(() => scrollToBottom("auto"));
 
     try {
       // Build messages for the API — Anthropic requires first message to be "user"
@@ -368,6 +545,16 @@ function Chat() {
         }
       }
 
+      const fallbackMapHint = extractMapHint(aiText);
+      aiText = fallbackMapHint.cleanText;
+      searchHintReceived = searchHintReceived ?? fallbackMapHint.searchHint;
+      setActiveChat((prev) => {
+        if (!prev) return prev;
+        const msgs = [...prev.messages];
+        msgs[msgs.length - 1] = { role: "ai", text: aiText };
+        return { ...prev, messages: msgs };
+      });
+
       const finalMessages: ChatMessage[] = [...userMessages, { role: "ai", text: aiText }];
       // Derive and persist title from first user message if not yet set
       const firstUser = finalMessages.find(m => m.role === "user");
@@ -378,36 +565,7 @@ function Chat() {
 
       // Trigger Mapbox search if intent was detected
       if (searchHintReceived) {
-        const { category, label, emoji } = searchHintReceived;
-        setMessagePlaces((prev) => ({ ...prev, [aiMsgIdx]: { places: [], label, emoji, loading: true } }));
-        const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
-        if (mapboxToken) {
-          try {
-            // Use already-resolved GPS ref; if not yet available, re-query
-            let coords: { lat: number; lng: number } | null = gpsRef.current;
-            if (!coords) {
-              coords = await getUserCoords();
-              if (coords) gpsRef.current = { ...gpsRef.current, ...coords };
-            }
-            // Last resort: onboarding stored location
-            if (!coords) {
-              const ob = user?.onboarding;
-              if (ob?.location?.latitude && ob?.location?.longitude) {
-                coords = { lat: ob.location.latitude, lng: ob.location.longitude };
-              }
-            }
-            if (coords) {
-              const places = await searchNearby(category, coords, mapboxToken);
-              setMessagePlaces((prev) => ({ ...prev, [aiMsgIdx]: { places, label, emoji, loading: false } }));
-            } else {
-              setMessagePlaces((prev) => ({ ...prev, [aiMsgIdx]: { places: [], label, emoji, loading: false, noLocation: true } }));
-            }
-          } catch {
-            setMessagePlaces((prev) => ({ ...prev, [aiMsgIdx]: { places: [], label, emoji, loading: false, noLocation: true } }));
-          }
-        } else {
-          setMessagePlaces((prev) => ({ ...prev, [aiMsgIdx]: { places: [], label, emoji, loading: false, noLocation: true } }));
-        }
+        await runNearbySearch(aiMsgIdx, searchHintReceived);
       }
     } catch {
       // Revert placeholder on error
@@ -527,6 +685,12 @@ function Chat() {
   };
 
   const messages = activeChat?.messages ?? [];
+  const lastMessageText = messages[messages.length - 1]?.text ?? "";
+
+  useEffect(() => {
+    if (!activeChat?.id || !aiStreaming || !isNearBottomRef.current) return;
+    requestAnimationFrame(() => scrollToBottom("auto"));
+  }, [activeChat?.id, aiStreaming, lastMessageText]);
 
   return (
     <div className="-mx-5 flex min-h-[calc(100dvh-160px)] flex-col">
@@ -686,7 +850,21 @@ function Chat() {
                 ))}
               </div>
             )}
+            <div ref={bottomRef} aria-hidden="true" />
           </div>
+
+          {showScrollToBottom && (
+            <button
+              type="button"
+              onClick={() => scrollToBottom()}
+              aria-label="Voltar para o fim da conversa"
+              className="fixed left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-full bg-[var(--color-foreground)] px-4 py-2.5 text-[12.5px] font-semibold text-[var(--color-background)] shadow-[var(--shadow-elev-3)] transition-transform active:scale-95"
+              style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 112px)" }}
+            >
+              <ArrowDown className="h-4 w-4" strokeWidth={2.4} />
+              Voltar ao fim
+            </button>
+          )}
 
           {/* Input */}
           <form
