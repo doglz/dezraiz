@@ -525,8 +525,7 @@ function Chat() {
             key={activeId ?? "none"}
             className="flex-1 animate-fade-in space-y-3 px-5"
             style={{
-              paddingBottom:
-                "calc(var(--bottom-nav-offset, 88px) + env(safe-area-inset-bottom, 0px) + 96px)",
+              paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 96px)",
             }}
           >
             {messages.map((m, i) => {
@@ -592,11 +591,8 @@ function Chat() {
               e.preventDefault();
               send(input);
             }}
-            className="fixed inset-x-0 z-40 mx-auto max-w-screen-sm px-5 pb-0 pt-2 transition-[bottom] duration-300 ease-out"
-            style={{
-              bottom:
-                "calc(var(--bottom-nav-offset, 88px) - 84px + env(safe-area-inset-bottom, 0px))",
-            }}
+            className="fixed inset-x-0 z-40 mx-auto max-w-screen-sm px-5 pb-0 pt-2"
+            style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)" }}
           >
             <div className={
               "flex items-center gap-2 rounded-full bg-[var(--color-card)] py-2 pl-5 pr-2 shadow-[var(--shadow-elev-3)] transition-opacity " +
