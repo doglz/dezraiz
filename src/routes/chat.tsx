@@ -15,6 +15,7 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "@tanstack/react-router";
+import { useAuth } from "@/lib/auth";
 import { RequireAuth } from "@/components/RequireAuth";
 import { AppShell } from "@/components/AppShell";
 import { PageTransition } from "@/components/PageTransition";
@@ -120,6 +121,10 @@ const WELCOME: ChatMessage = {
 };
 
 function Chat() {
+  const { user } = useAuth();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
   // Sidebar list (metadata only, no messages)
   const [chats, setChats] = useState<ChatSession[]>([]);
   // Active chat with full messages
@@ -157,8 +162,9 @@ function Chat() {
     setActiveChat(chat);
   };
 
-  // Bootstrap: carrega lista; NÃO cria chat automaticamente (estilo ChatGPT).
+  // Bootstrap: carrega lista quando o user estiver disponível no contexto de auth.
   useEffect(() => {
+    if (!user) return;
     (async () => {
       const all = await listChats();
       if (all.length === 0) {
@@ -175,7 +181,7 @@ function Chat() {
       setActiveId(active.id);
       await loadActiveChat(active.id);
     })();
-  }, []);
+  }, [user?.id]);
 
   // Load messages when active ID changes (e.g. after switching chats).
   useEffect(() => {
@@ -567,8 +573,8 @@ function Chat() {
             )}
           </div>
 
-          {/* Input — portal para sair do motion.div e position:fixed funcionar */}
-          {createPortal(
+          {/* Input — portal renderizado só no cliente para evitar erro SSR */}
+          {mounted && createPortal(
             <form
               onSubmit={(e) => {
                 e.preventDefault();
