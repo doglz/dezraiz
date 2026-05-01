@@ -390,10 +390,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
 
     setOnboarding: async (data) => {
-      // Always fetch the current session to ensure the JWT is fresh
-      const { data: { user: authUser } } = await supabase.auth.getUser();
+      const authUser = authUserRef.current;
       const uid = authUser?.id;
-      if (!uid) throw new Error("Sessão expirada. Faça login novamente.");
+      if (!uid || !authUser) throw new Error("Sessão expirada. Faça login novamente.");
 
       const now = new Date().toISOString();
       await ensureProfileRow(authUser, {
@@ -447,9 +446,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
 
     updateProfile: async (data) => {
-      const { data: { user: authUser } } = await supabase.auth.getUser();
+      const authUser = authUserRef.current;
       const uid = authUser?.id;
-      if (!uid) return;
+      if (!uid || !authUser) return;
 
       await ensureProfileRow(authUser, {
         firstName: data.firstName ?? user?.firstName,
@@ -465,7 +464,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
 
     upgrade: async () => {
-      const { data: { user: authUser } } = await supabase.auth.getUser();
+      const authUser = authUserRef.current;
       const uid = authUser?.id;
       if (!uid) return;
 
