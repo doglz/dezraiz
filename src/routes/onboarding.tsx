@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { isValidPhoneNumber } from "libphonenumber-js";
 import { Loader2, MapPin, Check, Baby, Ban, Lock, ChevronDown } from "lucide-react";
@@ -198,7 +198,6 @@ function clearOnboardingDraft(): void {
 
 function Onboarding() {
   const { user, setOnboarding, updateProfile, logout } = useAuth();
-  const navigate = useNavigate();
   const draft = useMemo(() => loadOnboardingDraft(), []);
 
   const [step, setStep] = useState(() => {
@@ -351,6 +350,41 @@ function Onboarding() {
   const futureYears = Array.from({ length: 6 }, (_, i) => now.getFullYear() + i);
   const years = journeyStage === "living" ? pastYears : futureYears;
 
+  const restartOnboarding = () => {
+    clearOnboardingDraft();
+    setStep(1);
+    setDirection(1);
+    setAttemptedNext(false);
+    setSaveError(null);
+    setFirstName("");
+    setLastName("");
+    setPhone(undefined);
+    setJourneyStage(null);
+    setLocation(null);
+    setDestinationCountry(undefined);
+    setDestinationCountryCode(undefined);
+    setDestinationCity(undefined);
+    setMonth(now.getMonth() + 1);
+    setYear(now.getFullYear());
+    setPregnancy(null);
+    setFamilyStatus(null);
+    setHasChildren(null);
+    setChildAges({});
+    setLanguageLevel(null);
+    setWantsLanguageTips(null);
+    setMainGoal(null);
+    setPlanningMaturity(null);
+    setVisaIntent(null);
+    setFinancialPrep([]);
+    setFirstAccommodation(null);
+    setBankingSetup([]);
+    setVisaStatus(null);
+    setBankAccount(null);
+    setWorkType(null);
+    setRemittance(null);
+    setHousing(null);
+  };
+
   const finish = async () => {
     if (!phone || !journeyStage || !pregnancy) return;
     if (journeyStage === "living" && !location) return;
@@ -387,7 +421,8 @@ function Onboarding() {
         housing: journeyStage === "living" ? housing ?? undefined : undefined,
       });
       clearOnboardingDraft();
-      navigate({ to: "/" });
+      // Hard redirect so RequireAuth re-evaluates with the freshly-set user state
+      window.location.href = "/";
     } catch (err) {
       setSubmitting(false);
       const message = err instanceof Error ? err.message : "";
@@ -434,12 +469,18 @@ function Onboarding() {
       <div className="mx-auto flex min-h-[100dvh] w-full max-w-md flex-col bg-background px-5 py-7 sm:px-6 lg:min-h-0 lg:max-w-2xl lg:rounded-3xl lg:p-12 lg:shadow-xl">
       {/* Header logo */}
       <div className="flex items-center justify-between pb-6 pt-2">
-        <div className="w-10" />
+        <button
+          type="button"
+          onClick={restartOnboarding}
+          className="w-16 text-left text-xs text-muted-foreground hover:text-foreground"
+        >
+          Recomeçar
+        </button>
         <Logo size={32} />
         <button
           type="button"
           onClick={() => logout().catch(() => {})}
-          className="w-10 text-right text-xs text-muted-foreground hover:text-foreground"
+          className="w-16 text-right text-xs text-muted-foreground hover:text-foreground"
         >
           Sair
         </button>

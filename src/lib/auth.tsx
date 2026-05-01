@@ -445,7 +445,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (onbError) throw new Error(`Onboarding: ${onbError.message}`);
 
-      await syncAuthMetadata({ phone: data.phone ?? null });
+      // Fire-and-forget — don't let a metadata sync hang block navigation
+      void syncAuthMetadata({ phone: data.phone ?? null }).catch(() => {});
 
       setUser((prev) =>
         prev ? { ...prev, phone: data.phone, onboarding: data } : prev,
