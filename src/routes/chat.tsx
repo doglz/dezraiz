@@ -49,6 +49,7 @@ import {
 } from "@/lib/chat-storage";
 import { SearchCards, type SearchCardsMeta } from "@/components/SearchCards";
 import { searchNearby, getUserCoords } from "@/lib/mapbox";
+import { reverseGeocode } from "@/lib/geo";
 
 export const Route = createFileRoute("/chat")({
   head: () => ({
@@ -165,6 +166,26 @@ function Chat() {
   const WELCOME = buildWelcome(user);
   const SUGGESTIONS = SUGGESTIONS_BY_STAGE[user?.onboarding?.journeyStage ?? "default"] ?? SUGGESTIONS_BY_STAGE.default;
 
+  // Current GPS location — fetched once on mount, refined as accuracy improves
+  const gpsRef = useRef<{ lat: number; lng: number; accuracy?: number; city?: string; country?: string } | null>(null);
+
+  useEffect(() => {
+    getUserCoords().then(async (coords) => {
+      if (!coords) return;
+      gpsRef.current = coords;
+      // Reverse-geocode to get city/country for the AI context
+      try {
+        const geo = await reverseGeocode(coords.lat, coords.lng);
+        const a = geo.address;
+        gpsRef.current = {
+          ...coords,
+          city: a.city ?? a.town ?? a.village,
+          country: a.country,
+        };
+      } catch { /* ignore — raw coords still useful */ }
+    }).catch(() => {});
+  }, []);
+
   // Sync userId para o storage logo que o contexto de auth tiver o user.
   useEffect(() => {
     setChatUserId(user?.id ?? null);
@@ -273,6 +294,7 @@ function Chat() {
 
       // Perfil do usuário para personalizar a IA
       const ob = user?.onboarding;
+      const gps = gpsRef.current;
       const userProfile = ob ? {
         firstName: user?.firstName,
         journeyStage: ob.journeyStage,
@@ -280,6 +302,10 @@ function Chat() {
         destinationCity: ob.destinationCity,
         locationCountry: ob.location?.country,
         locationCity: ob.location?.city,
+        currentLatitude: gps?.lat,
+        currentLongitude: gps?.lng,
+        currentLocationCity: gps?.city,
+        currentLocationCountry: gps?.country,
         arrivalMonth: ob.arrivalMonth,
         arrivalYear: ob.arrivalYear,
         mainGoal: ob.mainGoal,
@@ -357,11 +383,15 @@ function Chat() {
         const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
         if (mapboxToken) {
           try {
-            // Try GPS first, fall back to onboarding location
-            let coords = await getUserCoords();
+            // Use already-resolved GPS ref; if not yet available, re-query
+            let coords: { lat: number; lng: number } | null = gpsRef.current;
+            if (!coords) {
+              coords = await getUserCoords();
+              if (coords) gpsRef.current = { ...gpsRef.current, ...coords };
+            }
+            // Last resort: onboarding stored location
             if (!coords) {
               const ob = user?.onboarding;
-              const loc = ob?.location ?? (ob?.journeyStage === "living" ? undefined : undefined);
               if (ob?.location?.latitude && ob?.location?.longitude) {
                 coords = { lat: ob.location.latitude, lng: ob.location.longitude };
               }

@@ -19,6 +19,10 @@ type UserProfile = {
   destinationCity?: string;
   locationCountry?: string;
   locationCity?: string;
+  currentLocationCity?: string;
+  currentLocationCountry?: string;
+  currentLatitude?: number;
+  currentLongitude?: number;
   arrivalMonth?: number;
   arrivalYear?: number;
   mainGoal?: string;
@@ -39,15 +43,15 @@ type SearchHint = {
 };
 
 const INTENT_PATTERNS: Array<{ regex: RegExp; hint: SearchHint }> = [
-  { regex: /restaurante|comida|comer|lanche|prato brasileiro|churrasco|feijoada/i, hint: { category: "restaurant", label: "Restaurantes", emoji: "🍽️" } },
-  { regex: /alugar|apartamento|quarto|moradia|casa|hospedagem|morar/i, hint: { category: "real_estate", label: "Moradia", emoji: "🏠" } },
+  { regex: /restaurante|pizzaria|pizza|comida|comer|lanche|prato brasileiro|churrasco|feijoada|burger|hamburguer|sushi|jantar|almoço|café|padaria/i, hint: { category: "restaurant", label: "Restaurantes", emoji: "🍽️" } },
+  { regex: /alugar|apartamento|quarto|moradia|casa|hospedagem|morar|imóvel|aluguel/i, hint: { category: "real_estate", label: "Moradia", emoji: "🏠" } },
   { regex: /banco|conta bancária|abrir conta|financ/i, hint: { category: "bank", label: "Bancos", emoji: "🏦" } },
-  { regex: /médico|hospital|clínica|saúde|farmácia|dentista|pré.natal/i, hint: { category: "hospital", label: "Saúde", emoji: "🏥" } },
+  { regex: /médico|hospital|clínica|saúde|farmácia|dentista|pré.natal|emergência/i, hint: { category: "hospital", label: "Saúde", emoji: "🏥" } },
   { regex: /carro|cnh|locadora|aluguel de carro/i, hint: { category: "car_rental", label: "Aluguel de Carro", emoji: "🚗" } },
   { regex: /remessa|câmbio|transferir dinheiro|enviar dinheiro|wise|western union/i, hint: { category: "remittance", label: "Remessas e Câmbio", emoji: "💸" } },
 ];
 
-const LOCATION_TRIGGER = /perto|próximo|aqui|na minha região|onde|encontrar|indicar|sugerir|tem algum/i;
+const LOCATION_TRIGGER = /perto|próximo|aqui|na minha região|da região|minha localização|localização|onde|encontrar|indicar|sugerir|tem algum|ao redor|na área|por aqui|nas proximidades|perto de mim|mais perto|mais próximo/i;
 
 function detectIntent(messages: { role: string; content: string }[]): SearchHint | null {
   const last = messages.filter((m) => m.role === "user").pop();
@@ -126,6 +130,14 @@ function buildProfileContext(profile: UserProfile): string {
     const months = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
     const label = profile.journeyStage === "living" ? "Chegou em" : "Previsto para";
     lines.push(`- ${label}: ${months[profile.arrivalMonth - 1]}/${profile.arrivalYear}`);
+  }
+
+  // Current GPS location (real-time, higher priority than onboarding location)
+  const currentPlace = [profile.currentLocationCity, profile.currentLocationCountry].filter(Boolean).join(", ");
+  if (currentPlace) {
+    lines.push(`- Localização atual (GPS): ${currentPlace}`);
+  } else if (profile.currentLatitude && profile.currentLongitude) {
+    lines.push(`- Localização atual (GPS): lat ${profile.currentLatitude.toFixed(4)}, lng ${profile.currentLongitude.toFixed(4)}`);
   }
 
   if (profile.visaStatus) lines.push(`- Visto atual: ${VISA_STATUS[profile.visaStatus] ?? profile.visaStatus}`);

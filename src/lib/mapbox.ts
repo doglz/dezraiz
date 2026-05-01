@@ -61,13 +61,34 @@ export async function searchNearby(
   });
 }
 
-export async function getUserCoords(): Promise<{ lat: number; lng: number } | null> {
+export async function getUserCoords(): Promise<{ lat: number; lng: number; accuracy?: number } | null> {
   return new Promise((resolve) => {
     if (!navigator.geolocation) { resolve(null); return; }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      () => resolve(null),
-      { timeout: 5000 }
+
+    let best: { lat: number; lng: number; accuracy: number } | null = null;
+    let watchId: number;
+
+    const finish = () => {
+      navigator.geolocation.clearWatch(watchId);
+      resolve(best);
+    };
+
+    // Give up to 8 seconds; resolve early if accuracy < 50m
+    const timer = setTimeout(finish, 8000);
+
+    watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        const acc = pos.coords.accuracy;
+        if (!best || acc < best.accuracy) {
+          best = { lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: acc };
+        }
+        if (acc < 50) {
+          clearTimeout(timer);
+          finish();
+        }
+      },
+      () => { clearTimeout(timer); finish(); },
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 },
     );
   });
 }
