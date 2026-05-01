@@ -13,7 +13,6 @@ import {
   MessagesSquare,
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import { Link } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth";
 import { RequireAuth } from "@/components/RequireAuth";
@@ -122,8 +121,6 @@ const WELCOME: ChatMessage = {
 
 function Chat() {
   const { user } = useAuth();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
 
   // Sidebar list (metadata only, no messages)
   const [chats, setChats] = useState<ChatSession[]>([]);
@@ -271,7 +268,12 @@ function Chat() {
       }
 
       const finalMessages: ChatMessage[] = [...userMessages, { role: "ai", text: aiText }];
-      await updateChat(activeChat.id, { messages: finalMessages });
+      // Derive and persist title from first user message if not yet set
+      const firstUser = finalMessages.find(m => m.role === "user");
+      const titlePatch = (!activeChat.title && firstUser)
+        ? { title: firstUser.text.trim().replace(/\s+/g, " ").slice(0, 40) + (firstUser.text.length > 40 ? "…" : "") }
+        : {};
+      await updateChat(activeChat.id, { messages: finalMessages, ...titlePatch });
 
       // Trigger Mapbox search if intent was detected
       if (searchHintReceived) {
@@ -573,42 +575,39 @@ function Chat() {
             )}
           </div>
 
-          {/* Input — portal renderizado só no cliente para evitar erro SSR */}
-          {mounted && createPortal(
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                send(input);
-              }}
-              className="fixed inset-x-0 z-40 mx-auto max-w-screen-sm px-5 pb-0 pt-2 transition-[bottom] duration-300 ease-out"
-              style={{
-                bottom:
-                  "calc(var(--bottom-nav-offset, 88px) - 84px + env(safe-area-inset-bottom, 0px))",
-              }}
-            >
-              <div className={
-                "flex items-center gap-2 rounded-full bg-[var(--color-card)] py-2 pl-5 pr-2 shadow-[var(--shadow-elev-3)] transition-opacity " +
-                (aiStreaming ? "opacity-60" : "")
-              }>
-                <input
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder={aiStreaming ? "IA respondendo…" : "Pergunte algo..."}
-                  disabled={aiStreaming}
-                  className="h-10 flex-1 bg-transparent text-[14px] outline-none placeholder:text-[var(--color-muted-foreground)] disabled:cursor-not-allowed"
-                />
-                <button
-                  type="submit"
-                  aria-label="Enviar"
-                  disabled={aiStreaming}
-                  className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-[var(--color-primary)] text-white transition-transform active:scale-95 disabled:opacity-50"
-                >
-                  <Send className="h-[18px] w-[18px]" strokeWidth={2.2} />
-                </button>
-              </div>
-            </form>,
-            document.body
-          )}
+          {/* Input */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              send(input);
+            }}
+            className="fixed inset-x-0 z-40 mx-auto max-w-screen-sm px-5 pb-0 pt-2 transition-[bottom] duration-300 ease-out"
+            style={{
+              bottom:
+                "calc(var(--bottom-nav-offset, 88px) - 84px + env(safe-area-inset-bottom, 0px))",
+            }}
+          >
+            <div className={
+              "flex items-center gap-2 rounded-full bg-[var(--color-card)] py-2 pl-5 pr-2 shadow-[var(--shadow-elev-3)] transition-opacity " +
+              (aiStreaming ? "opacity-60" : "")
+            }>
+              <input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={aiStreaming ? "IA respondendo…" : "Pergunte algo..."}
+                disabled={aiStreaming}
+                className="h-10 flex-1 bg-transparent text-[14px] outline-none placeholder:text-[var(--color-muted-foreground)] disabled:cursor-not-allowed"
+              />
+              <button
+                type="submit"
+                aria-label="Enviar"
+                disabled={aiStreaming}
+                className="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-[var(--color-primary)] text-white transition-transform active:scale-95 disabled:opacity-50"
+              >
+                <Send className="h-[18px] w-[18px]" strokeWidth={2.2} />
+              </button>
+            </div>
+          </form>
         </>
       )}
 
