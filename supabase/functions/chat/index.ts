@@ -1,3 +1,37 @@
+// @ts-nocheck — Deno runtime; local TS não conhece Deno.serve / Deno.env
+
+// Catálogo de categorias de busca — usado pelo AI para decidir o marcador [MAPA:x]
+// e pelo Edge Function para construir o SearchHint.
+const SEARCH_CATALOG: Record<string, { label: string; emoji: string }> = {
+  restaurant:  { label: "Restaurantes",          emoji: "🍽️" },
+  supermarket: { label: "Supermercados",          emoji: "🛒" },
+  real_estate: { label: "Moradia",                emoji: "🏠" },
+  hotel:       { label: "Hotéis e Pousadas",      emoji: "🏨" },
+  hospital:    { label: "Hospitais e Clínicas",   emoji: "🏥" },
+  pharmacy:    { label: "Farmácias",              emoji: "💊" },
+  dentist:     { label: "Dentistas",              emoji: "🦷" },
+  veterinary:  { label: "Veterinários",           emoji: "🐾" },
+  bank:        { label: "Bancos",                 emoji: "🏦" },
+  remittance:  { label: "Remessas e Câmbio",      emoji: "💸" },
+  car_rental:  { label: "Aluguel de Carro",       emoji: "🚗" },
+  gas_station: { label: "Postos de Gasolina",     emoji: "⛽" },
+  transit:     { label: "Transporte Público",     emoji: "🚇" },
+  park:        { label: "Parques e Praças",       emoji: "🌳" },
+  gym:         { label: "Academias",              emoji: "💪" },
+  shopping:    { label: "Shopping e Lojas",       emoji: "🛍️" },
+  beauty:      { label: "Salões e Barbearias",    emoji: "✂️" },
+  worship:     { label: "Igrejas e Templos",      emoji: "🙏" },
+  school:      { label: "Escolas",                emoji: "🏫" },
+  laundry:     { label: "Lavanderias",            emoji: "👕" },
+  consulate:   { label: "Consulados e Cartórios", emoji: "🏛️" },
+  coworking:   { label: "Coworkings",             emoji: "💻" },
+  library:     { label: "Bibliotecas",            emoji: "📚" },
+  police:      { label: "Delegacias",             emoji: "🚔" },
+  airport:     { label: "Aeroportos",             emoji: "✈️" },
+};
+
+const CATEGORY_LIST = Object.keys(SEARCH_CATALOG).join(", ");
+
 const SYSTEM_PROMPT = `Você é a IA da DEZRAIZ — assistente especializada para brasileiros que planejam, viajam ou já moram fora do Brasil.
 
 Responda SEMPRE em português brasileiro, de forma clara, direta e empática. Seja objetivo e use exemplos práticos. Quando não tiver certeza, diga claramente.
@@ -9,6 +43,16 @@ Seus domínios de conhecimento:
 - Vida no exterior: moradia, conta bancária local, seguro saúde, transporte
 - Trabalho: visto de trabalho, contrato local, declaração de rendimentos no exterior
 - Família: reunificação familiar, visto para cônjuge e filhos, escola para crianças
+- Dia a dia: ajudar a encontrar serviços locais (restaurantes, hospitais, parques, veterinários, academias e outros) perto do usuário
+
+ESCOPO — Quando o usuário perguntar algo completamente fora desses domínios (esportes, receitas culinárias em casa, entretenimento, celebridades, programação, matemática, ciência geral, política não relacionada a imigração, etc.), responda com cordialidade: "Sou especializada em ajudar brasileiros no exterior — documentação, finanças, burocracia e vida fora do Brasil. Para esse assunto não consigo te ajudar, mas se tiver dúvidas sobre sua vida lá fora, pode perguntar!"
+
+BUSCA LOCAL — Quando o usuário estiver pedindo para encontrar algo fisicamente próximo à sua localização atual (ex: "tem uma farmácia perto?", "preciso de um veterinário aqui", "onde achar um parque"), adicione na ÚLTIMA LINHA da resposta o marcador:
+[MAPA:categoria]
+
+Use SOMENTE categorias desta lista: ${CATEGORY_LIST}
+
+Escolha a categoria mais específica possível. NÃO use o marcador para perguntas gerais ou informativas (ex: "como funciona seguro saúde", "qual o melhor banco para remessa" não precisam de marcador — só use quando o usuário quer encontrar algo físico perto de onde está).
 
 Limite cada resposta a 3-4 parágrafos. Use listas quando listar opções ou passos.`;
 
@@ -41,28 +85,6 @@ type SearchHint = {
   label: string;
   emoji: string;
 };
-
-const INTENT_PATTERNS: Array<{ regex: RegExp; hint: SearchHint }> = [
-  { regex: /restaurante|pizzaria|pizza|comida|comer|lanche|prato brasileiro|churrasco|feijoada|burger|hamburguer|sushi|jantar|almoço|café|padaria/i, hint: { category: "restaurant", label: "Restaurantes", emoji: "🍽️" } },
-  { regex: /alugar|apartamento|quarto|moradia|casa|hospedagem|morar|imóvel|aluguel/i, hint: { category: "real_estate", label: "Moradia", emoji: "🏠" } },
-  { regex: /banco|conta bancária|abrir conta|financ/i, hint: { category: "bank", label: "Bancos", emoji: "🏦" } },
-  { regex: /médico|hospital|clínica|saúde|farmácia|dentista|pré.natal|emergência/i, hint: { category: "hospital", label: "Saúde", emoji: "🏥" } },
-  { regex: /carro|cnh|locadora|aluguel de carro/i, hint: { category: "car_rental", label: "Aluguel de Carro", emoji: "🚗" } },
-  { regex: /remessa|câmbio|transferir dinheiro|enviar dinheiro|wise|western union/i, hint: { category: "remittance", label: "Remessas e Câmbio", emoji: "💸" } },
-];
-
-const LOCATION_TRIGGER = /perto|próximo|aqui|na minha região|da região|minha localização|localização|onde|encontrar|indicar|sugerir|tem algum|ao redor|na área|por aqui|nas proximidades|perto de mim|mais perto|mais próximo/i;
-
-function detectIntent(messages: { role: string; content: string }[]): SearchHint | null {
-  const last = messages.filter((m) => m.role === "user").pop();
-  if (!last) return null;
-  const text = last.content;
-  if (!LOCATION_TRIGGER.test(text)) return null;
-  for (const { regex, hint } of INTENT_PATTERNS) {
-    if (regex.test(text)) return hint;
-  }
-  return null;
-}
 
 const VISA_STATUS: Record<string, string> = {
   tourist: "turista",
@@ -132,7 +154,6 @@ function buildProfileContext(profile: UserProfile): string {
     lines.push(`- ${label}: ${months[profile.arrivalMonth - 1]}/${profile.arrivalYear}`);
   }
 
-  // Current GPS location (real-time, higher priority than onboarding location)
   const currentPlace = [profile.currentLocationCity, profile.currentLocationCountry].filter(Boolean).join(", ");
   if (currentPlace) {
     lines.push(`- Localização atual (GPS): ${currentPlace}`);
@@ -158,6 +179,11 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+// Regex to detect [MAPA:category] marker at the very end of the AI response
+const MAPA_RE = /\n?\s*\[MAPA:([a-z_]+)\]\s*$/;
+// Tail buffer size — must be >= max marker length "[MAPA:gas_station]" = 19 chars + some whitespace
+const TAIL_SIZE = 40;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -189,8 +215,6 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-
-  const searchHint = detectIntent(messages);
 
   const profileContext = profile ? buildProfileContext(profile) : "";
   const systemPrompt = SYSTEM_PROMPT + profileContext;
@@ -232,6 +256,17 @@ Deno.serve(async (req) => {
         const reader = groqRes.body!.getReader();
         const decoder = new TextDecoder();
         let buffer = "";
+        // Rolling tail buffer — holds back the last TAIL_SIZE chars so we can
+        // detect and strip the [MAPA:x] marker without ever sending it to client.
+        let tail = "";
+
+        const flushSafe = () => {
+          if (tail.length > TAIL_SIZE) {
+            const safe = tail.slice(0, tail.length - TAIL_SIZE);
+            if (safe) controller.enqueue(encoder.encode(`data: ${JSON.stringify({ delta: safe })}\n\n`));
+            tail = tail.slice(tail.length - TAIL_SIZE);
+          }
+        };
 
         while (true) {
           const { done, value } = await reader.read();
@@ -248,10 +283,26 @@ Deno.serve(async (req) => {
               const chunk = JSON.parse(data);
               const text = chunk.choices?.[0]?.delta?.content;
               if (text) {
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify({ delta: text })}\n\n`));
+                tail += text;
+                flushSafe();
               }
             } catch { /* malformed chunk, skip */ }
           }
+        }
+
+        // Stream ended — check tail for [MAPA:category] marker
+        let searchHint: SearchHint | null = null;
+        const mapaMatch = tail.match(MAPA_RE);
+        if (mapaMatch) {
+          const category = mapaMatch[1];
+          const cat = SEARCH_CATALOG[category];
+          if (cat) searchHint = { category, ...cat };
+          // Emit tail without the marker
+          const cleanTail = tail.slice(0, mapaMatch.index ?? tail.length).replace(/\s+$/, "");
+          if (cleanTail) controller.enqueue(encoder.encode(`data: ${JSON.stringify({ delta: cleanTail })}\n\n`));
+        } else {
+          // No marker — emit tail as-is
+          if (tail) controller.enqueue(encoder.encode(`data: ${JSON.stringify({ delta: tail })}\n\n`));
         }
 
         if (searchHint) {

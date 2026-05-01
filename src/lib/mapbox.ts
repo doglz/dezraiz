@@ -2,11 +2,30 @@ import type { SearchPlace } from "@/components/SearchCards";
 
 const CATEGORY_QUERIES: Record<string, string> = {
   restaurant: "restaurante",
+  supermarket: "supermercado mercado",
   real_estate: "apartamento aluguel",
-  bank: "banco",
+  hotel: "hotel pousada hostel",
   hospital: "hospital clínica médico",
-  car_rental: "aluguel de carro locadora",
+  pharmacy: "farmácia drogaria",
+  dentist: "dentista",
+  veterinary: "veterinário clínica pet",
+  bank: "banco",
   remittance: "money transfer câmbio remessa",
+  car_rental: "aluguel de carro locadora",
+  gas_station: "posto de gasolina",
+  transit: "estação metro trem",
+  park: "parque jardim",
+  gym: "academia ginásio",
+  shopping: "shopping loja",
+  beauty: "salão cabeleireiro",
+  worship: "igreja templo",
+  school: "escola colégio",
+  laundry: "lavanderia",
+  consulate: "consulado embaixada",
+  coworking: "coworking espaço de trabalho compartilhado",
+  library: "biblioteca",
+  police: "delegacia polícia",
+  airport: "aeroporto",
 };
 
 function kmBetween(lat1: number, lng1: number, lat2: number, lng2: number) {
