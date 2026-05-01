@@ -12,6 +12,26 @@ Seus domínios de conhecimento:
 
 Limite cada resposta a 3-4 parágrafos. Use listas quando listar opções ou passos.`;
 
+type UserProfile = {
+  firstName?: string;
+  journeyStage?: string;
+  destinationCountry?: string;
+  destinationCity?: string;
+  locationCountry?: string;
+  locationCity?: string;
+  arrivalMonth?: number;
+  arrivalYear?: number;
+  mainGoal?: string;
+  languageLevel?: string;
+  familyStatus?: string;
+  hasChildren?: boolean;
+  visaStatus?: string;
+  visaIntent?: string;
+  workType?: string;
+  remittance?: string;
+  bankAccount?: string;
+};
+
 type SearchHint = {
   category: string;
   label: string;
@@ -40,6 +60,42 @@ function detectIntent(messages: { role: string; content: string }[]): SearchHint
   return null;
 }
 
+function buildProfileContext(profile: UserProfile): string {
+  const lines: string[] = [];
+
+  if (profile.firstName) lines.push(`- Nome: ${profile.firstName}`);
+
+  if (profile.journeyStage) lines.push(`- Situação: ${stageLabel(profile.journeyStage)}`);
+
+  const place =
+    profile.journeyStage === "living"
+      ? [profile.locationCity, profile.locationCountry].filter(Boolean).join(", ")
+      : [profile.destinationCity, profile.destinationCountry].filter(Boolean).join(", ");
+  if (place) {
+    const label = profile.journeyStage === "living" ? "Mora em" : "Destino";
+    lines.push(`- ${label}: ${place}`);
+  }
+
+  if (profile.arrivalMonth && profile.arrivalYear) {
+    const months = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+    const label = profile.journeyStage === "living" ? "Chegou em" : "Previsto para";
+    lines.push(`- ${label}: ${months[profile.arrivalMonth - 1]}/${profile.arrivalYear}`);
+  }
+
+  if (profile.visaStatus) lines.push(`- Visto atual: ${profile.visaStatus}`);
+  if (profile.visaIntent) lines.push(`- Visto pretendido: ${profile.visaIntent}`);
+  if (profile.workType) lines.push(`- Trabalho: ${profile.workType}`);
+  if (profile.bankAccount) lines.push(`- Conta bancária local: ${profile.bankAccount}`);
+  if (profile.remittance && profile.remittance !== "never") lines.push(`- Envia remessas: ${profile.remittance}`);
+  if (profile.familyStatus) lines.push(`- Situação familiar: ${profile.familyStatus}`);
+  if (profile.hasChildren) lines.push(`- Tem filhos`);
+  if (profile.languageLevel) lines.push(`- Idioma local: ${profile.languageLevel}`);
+  if (profile.mainGoal) lines.push(`- Objetivo principal: ${profile.mainGoal}`);
+
+  if (lines.length === 0) return "";
+  return `\n\nPerfil do usuário (use estas informações para personalizar as respostas, sem mencionar explicitamente a menos que seja relevante):\n${lines.join("\n")}`;
+}
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -58,7 +114,7 @@ Deno.serve(async (req) => {
     });
   }
 
-  let body: { messages: { role: string; content: string }[]; stage?: string };
+  let body: { messages: { role: string; content: string }[]; profile?: UserProfile };
   try {
     body = await req.json();
   } catch {
@@ -68,7 +124,7 @@ Deno.serve(async (req) => {
     });
   }
 
-  const { messages, stage } = body;
+  const { messages, profile } = body;
   if (!Array.isArray(messages) || messages.length === 0) {
     return new Response(JSON.stringify({ error: "Mensagens inválidas." }), {
       status: 400,
@@ -78,9 +134,8 @@ Deno.serve(async (req) => {
 
   const searchHint = detectIntent(messages);
 
-  const systemPrompt = stage
-    ? `${SYSTEM_PROMPT}\n\nContexto do usuário: ${stageLabel(stage)}.`
-    : SYSTEM_PROMPT;
+  const profileContext = profile ? buildProfileContext(profile) : "";
+  const systemPrompt = SYSTEM_PROMPT + profileContext;
 
   const groqMessages = [
     { role: "system", content: systemPrompt },
@@ -159,6 +214,8 @@ Deno.serve(async (req) => {
       ...corsHeaders,
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
+      "X-Accel-Buffering": "no",
+      "Connection": "keep-alive",
     },
   });
 });

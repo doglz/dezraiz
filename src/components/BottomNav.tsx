@@ -4,6 +4,7 @@ import {
   MessageCircle,
   CheckSquare,
   User,
+  Map,
   ChevronUp,
   ChevronDown,
 } from "lucide-react";
@@ -18,7 +19,7 @@ import { loadChecklist } from "@/lib/checklist";
  * Quando oculta, mostra uma alça (handle) na borda inferior para trazer de volta.
  */
 type MenuItem = {
-  to: "/" | "/chat" | "/checklist" | "/profile";
+  to: "/" | "/chat" | "/checklist" | "/profile" | "/mapa";
   label: string;
   icon: typeof House;
   badgeKey?: "checklist";
@@ -27,6 +28,7 @@ type MenuItem = {
 const MENU_ITEMS: readonly MenuItem[] = [
   { to: "/",          label: "Início",  icon: House },
   { to: "/chat",      label: "Chat",    icon: MessageCircle },
+  { to: "/mapa",      label: "Mapa",    icon: Map },
   { to: "/checklist", label: "Tarefas", icon: CheckSquare, badgeKey: "checklist" },
   { to: "/profile",   label: "Perfil",  icon: User },
 ];
@@ -98,7 +100,7 @@ export function BottomNav() {
                   <ChevronDown className="h-4 w-4 text-[var(--color-foreground)]" strokeWidth={2.4} />
                 </button>
 
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-5 gap-1.5">
                   {MENU_ITEMS.map((item) => {
                     const active =
                       location.pathname === item.to || location.pathname.startsWith(item.to + "/");

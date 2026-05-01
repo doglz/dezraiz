@@ -229,13 +229,35 @@ function Chat() {
       const { data: { session } } = await (await import("@/lib/supabase")).supabase.auth.getSession();
       const token = session?.access_token ?? supabaseKey;
 
+      // Perfil do usuário para personalizar a IA
+      const ob = user?.onboarding;
+      const userProfile = ob ? {
+        firstName: user?.firstName,
+        journeyStage: ob.journeyStage,
+        destinationCountry: ob.destinationCountry,
+        destinationCity: ob.destinationCity,
+        locationCountry: ob.location?.country,
+        locationCity: ob.location?.city,
+        arrivalMonth: ob.arrivalMonth,
+        arrivalYear: ob.arrivalYear,
+        mainGoal: ob.mainGoal,
+        languageLevel: ob.languageLevel,
+        familyStatus: ob.familyStatus,
+        hasChildren: ob.hasChildren,
+        visaStatus: ob.visaStatus,
+        visaIntent: ob.visaIntent,
+        workType: ob.workType,
+        remittance: ob.remittance,
+        bankAccount: ob.bankAccount,
+      } : undefined;
+
       const res = await fetch(`${supabaseUrl}/functions/v1/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify({ messages: apiMessages }),
+        body: JSON.stringify({ messages: apiMessages, profile: userProfile }),
       });
 
       if (!res.ok || !res.body) {
@@ -293,7 +315,15 @@ function Chat() {
         const mapboxToken = import.meta.env.VITE_MAPBOX_TOKEN;
         if (mapboxToken) {
           try {
-            const coords = await getUserCoords();
+            // Try GPS first, fall back to onboarding location
+            let coords = await getUserCoords();
+            if (!coords) {
+              const ob = user?.onboarding;
+              const loc = ob?.location ?? (ob?.journeyStage === "living" ? undefined : undefined);
+              if (ob?.location?.latitude && ob?.location?.longitude) {
+                coords = { lat: ob.location.latitude, lng: ob.location.longitude };
+              }
+            }
             if (coords) {
               const places = await searchNearby(category, coords, mapboxToken);
               setMessagePlaces((prev) => ({ ...prev, [aiMsgIdx]: { places, label, emoji, loading: false } }));
@@ -561,6 +591,7 @@ function Chat() {
                       label={cards.label}
                       emoji={cards.emoji}
                       loading={cards.loading}
+                      noLocation={cards.noLocation}
                     />
                   )}
                 </div>
