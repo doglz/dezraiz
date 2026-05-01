@@ -129,6 +129,7 @@ export interface Onboarding {
 }
 
 export interface User {
+  id?: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -308,6 +309,7 @@ async function loadUserData(authUser: AuthUser): Promise<User | null> {
 
   const onboarding = onboardingRow ? rowToOnboarding(onboardingRow) : undefined;
   return {
+    id: authUser.id,
     firstName: profile?.first_name || authUser.email?.split("@")[0] || "Você",
     lastName: profile?.last_name || "",
     email: authUser.email ?? "",

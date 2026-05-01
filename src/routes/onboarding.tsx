@@ -424,11 +424,6 @@ function Onboarding() {
       clearOnboardingDraft();
       setSubmitting(false);
       await navigate({ to: "/", replace: true });
-      window.setTimeout(() => {
-        if (window.location.pathname === "/onboarding") {
-          window.location.assign("/");
-        }
-      }, 300);
     } catch (err) {
       setSubmitting(false);
       const message = err instanceof Error ? err.message : "";

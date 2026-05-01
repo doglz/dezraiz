@@ -1,4 +1,4 @@
-﻿import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import {
   Send,
   Sparkles,
@@ -57,7 +57,7 @@ export const Route = createFileRoute("/chat")({
     ...seo({
       title: "Chat IA",
       description:
-        "Tire dÃºvidas sobre documentos, impostos, remessas e o dia a dia â€” esteja vocÃª planejando ir, viajando ou jÃ¡ morando fora â€” com a IA da DEZRAIZ.",
+        "Tire dúvidas sobre documentos, impostos, remessas e o dia a dia — esteja você planejando ir, viajando ou já morando fora — com a IA da DEZRAIZ.",
       path: "/chat",
     }),
   }),
@@ -158,12 +158,12 @@ function MarkdownText({ text }: { text: string }) {
 const SUGGESTIONS_BY_STAGE: Record<string, string[]> = {
   planning: [
     "Quais documentos preciso para emigrar?",
-    "Como fazer a declaraÃ§Ã£o de saÃ­da definitiva?",
+    "Como fazer a declaração de saída definitiva?",
     "Como comparar vistos para meu destino?",
   ],
   traveling: [
-    "O que fazer primeiro ao chegar no paÃ­s?",
-    "Como abrir conta bancÃ¡ria local?",
+    "O que fazer primeiro ao chegar no país?",
+    "Como abrir conta bancária local?",
     "Como me cadastrar no consulado brasileiro?",
   ],
   living: [
@@ -172,51 +172,58 @@ const SUGGESTIONS_BY_STAGE: Record<string, string[]> = {
     "Como declarar renda do exterior no IRPF?",
   ],
   default: [
-    "Como faÃ§o minha declaraÃ§Ã£o de saÃ­da?",
+    "Como faço minha declaração de saída?",
     "Qual o melhor app de remessa?",
     "Como cadastrar no consulado?",
   ],
 };
 
 const SEARCH_CATALOG: Record<string, { label: string; emoji: string }> = {
-  restaurant: { label: "Restaurantes", emoji: "ðŸ½ï¸" },
-  supermarket: { label: "Supermercados", emoji: "ðŸ›’" },
-  real_estate: { label: "Moradia", emoji: "ðŸ " },
-  hotel: { label: "HotÃ©is e Pousadas", emoji: "ðŸ¨" },
-  hospital: { label: "Hospitais e ClÃ­nicas", emoji: "ðŸ¥" },
-  pharmacy: { label: "FarmÃ¡cias", emoji: "ðŸ’Š" },
-  dentist: { label: "Dentistas", emoji: "ðŸ¦·" },
-  veterinary: { label: "VeterinÃ¡rios", emoji: "ðŸ¾" },
-  bank: { label: "Bancos", emoji: "ðŸ¦" },
-  remittance: { label: "Remessas e CÃ¢mbio", emoji: "ðŸ’¸" },
-  car_rental: { label: "Aluguel de Carro", emoji: "ðŸš—" },
-  gas_station: { label: "Postos de Gasolina", emoji: "â›½" },
-  transit: { label: "Transporte PÃºblico", emoji: "ðŸš‡" },
-  park: { label: "Parques e PraÃ§as", emoji: "ðŸŒ³" },
-  gym: { label: "Academias", emoji: "ðŸ’ª" },
-  shopping: { label: "Shopping e Lojas", emoji: "ðŸ›ï¸" },
-  beauty: { label: "SalÃµes e Barbearias", emoji: "âœ‚ï¸" },
-  worship: { label: "Igrejas e Templos", emoji: "ðŸ™" },
-  school: { label: "Escolas", emoji: "ðŸ«" },
-  laundry: { label: "Lavanderias", emoji: "ðŸ‘•" },
-  consulate: { label: "Consulados e CartÃ³rios", emoji: "ðŸ›ï¸" },
-  coworking: { label: "Coworkings", emoji: "ðŸ’»" },
-  library: { label: "Bibliotecas", emoji: "ðŸ“š" },
-  police: { label: "Delegacias", emoji: "ðŸš”" },
-  airport: { label: "Aeroportos", emoji: "âœˆï¸" },
+  restaurant:  { label: "Restaurantes",           emoji: "🍽️" },
+  supermarket: { label: "Supermercados",          emoji: "🛒" },
+  real_estate: { label: "Moradia",                emoji: "🏠" },
+  hotel:       { label: "Hotéis e Pousadas",      emoji: "🏨" },
+  hospital:    { label: "Hospitais e Clínicas",   emoji: "🏥" },
+  pharmacy:    { label: "Farmácias",              emoji: "💊" },
+  dentist:     { label: "Dentistas",              emoji: "🦷" },
+  veterinary:  { label: "Veterinários",           emoji: "🐾" },
+  bank:        { label: "Bancos",                 emoji: "🏦" },
+  remittance:  { label: "Remessas e Câmbio",     emoji: "💸" },
+  car_rental:  { label: "Aluguel de Carro",       emoji: "🚗" },
+  gas_station: { label: "Postos de Gasolina",     emoji: "⛽" },
+  transit:     { label: "Transporte Público",    emoji: "🚇" },
+  park:        { label: "Parques e Praças",      emoji: "🌳" },
+  gym:         { label: "Academias",              emoji: "💪" },
+  shopping:    { label: "Shopping e Lojas",       emoji: "🛍️" },
+  beauty:      { label: "Salões e Barbearias",   emoji: "✂️" },
+  worship:     { label: "Igrejas e Templos",      emoji: "🙏" },
+  school:      { label: "Escolas",                emoji: "🏫" },
+  laundry:     { label: "Lavanderias",            emoji: "👕" },
+  consulate:   { label: "Consulados e Cartórios", emoji: "🏛️" },
+  coworking:   { label: "Coworkings",             emoji: "💻" },
+  library:     { label: "Bibliotecas",            emoji: "📚" },
+  police:      { label: "Delegacias",             emoji: "🚔" },
+  airport:     { label: "Aeroportos",             emoji: "✈️" },
 };
 
-const MAPA_RE = /\n?\s*\[MAPA:([a-z_]+)\]\s*$/;
+const MAPA_RE = /\[MAPA:\s*([A-Za-z0-9_-]+)\s*\]/i;
 type SearchHint = { category: string; label: string; emoji: string };
 
 function extractMapHint(text: string): { cleanText: string; searchHint: SearchHint | null } {
-  const match = text.match(MAPA_RE);
-  if (!match) return { cleanText: text, searchHint: null };
+  // Find all matches
+  const matches = [...text.matchAll(new RegExp(MAPA_RE, "gi"))];
+  if (matches.length === 0) return { cleanText: text, searchHint: null };
 
-  const category = match[1];
+  // Use the last match as the primary hint
+  const lastMatch = matches[matches.length - 1];
+  const category = lastMatch[1].toLowerCase();
+  
+  // Clean text by removing ALL [MAPA:xxx] markers
+  const cleanText = text.replace(new RegExp(MAPA_RE, "gi"), "").replace(/\s+$/, "");
+  
   const meta = SEARCH_CATALOG[category];
   return {
-    cleanText: text.slice(0, match.index ?? text.length).replace(/\s+$/, ""),
+    cleanText,
     searchHint: meta ? { category, ...meta } : null,
   };
 }
@@ -228,7 +235,7 @@ function buildWelcome(user: import("@/lib/auth").User | null): ChatMessage {
   if (!ob) {
     return {
       role: "ai",
-      text: `OlÃ¡${name}! ðŸ‘‹ Posso te ajudar a planejar a mudanÃ§a, organizar a viagem ou resolver a vida fora â€” documentos, impostos, remessas e o dia a dia. O que vocÃª quer saber?`,
+      text: `Olá${name}! 👋 Posso te ajudar a planejar a mudança, organizar a viagem ou resolver a vida fora — documentos, impostos, remessas e o dia a dia. O que você quer saber?`,
     };
   }
 
@@ -237,18 +244,17 @@ function buildWelcome(user: import("@/lib/auth").User | null): ChatMessage {
 
   let text = "";
   if (stage === "planning") {
-    text = `OlÃ¡${name}! ðŸ‘‹ Vi que vocÃª estÃ¡ planejando ir${destination ? ` para ${destination}` : " para o exterior"}. Posso ajudar com documentos, vistos, preparaÃ§Ã£o financeira e tudo que vocÃª precisa resolver antes de partir. Por onde quer comeÃ§ar?`;
+    text = `Olá${name}! 👋 Vi que você está planejando ir${destination ? ` para ${destination}` : " para o exterior"}. Posso ajudar com documentos, vistos, preparação financeira e tudo que você precisa resolver antes de partir. Por onde quer começar?`;
   } else if (stage === "traveling") {
-    text = `OlÃ¡${name}! ðŸ‘‹ VocÃª estÃ¡${destination ? ` a caminho de ${destination}` : " em viagem"}! Posso ajudar com o que fazer ao chegar â€” conta bancÃ¡ria, consulado, moradia e burocracia local. O que precisa saber?`;
+    text = `Olá${name}! 👋 Você está${destination ? ` a caminho de ${destination}` : " em viagem"}! Posso ajudar com o que fazer ao chegar — conta bancária, consulado, moradia e burocracia local. O que precisa saber?`;
   } else if (stage === "living") {
-    text = `OlÃ¡${name}! ðŸ‘‹ Que bom te ter aqui! Posso ajudar com remessas, declaraÃ§Ã£o de renda, CPF, visto, moradia e o dia a dia de quem jÃ¡ mora fora${destination ? ` em ${destination}` : ""}. Como posso te ajudar?`;
+    text = `Olá${name}! 👋 Que bom te ter aqui! Posso ajudar com remessas, declaração de renda, CPF, visto, moradia e o dia a dia de quem já mora fora${destination ? ` em ${destination}` : ""}. Como posso te ajudar?`;
   } else {
-    text = `OlÃ¡${name}! ðŸ‘‹ Sou a IA da DEZRAIZ â€” aqui para ajudar com documentos, impostos, remessas e o dia a dia fora do Brasil. O que vocÃª quer saber?`;
+    text = `Olá${name}! 👋 Sou a IA da DEZRAIZ — aqui para ajudar com documentos, impostos, remessas e o dia a dia fora do Brasil. O que você quer saber?`;
   }
 
   return { role: "ai", text };
 }
-
 function Chat() {
   const { user } = useAuth();
   const WELCOME = buildWelcome(user);
@@ -394,26 +400,25 @@ function Chat() {
     }
   };
 
-  useEffect(() => {
-    if (!activeChat?.id) return;
-
-    const cleanedMessages = activeChat.messages.map((message) => {
-      if (message.role !== "ai") return message;
-      const { cleanText } = extractMapHint(message.text);
-      return cleanText === message.text ? message : { ...message, text: cleanText };
+  // Clean messages to remove markers from UI
+  const cleanedMessages = useMemo(() => {
+    if (!activeChat) return [];
+    return activeChat.messages.map((m) => {
+      if (m.role !== "ai") return m;
+      const { cleanText } = extractMapHint(m.text);
+      return cleanText === m.text ? m : { ...m, text: cleanText };
     });
+  }, [activeChat?.messages]);
 
-    const changed = cleanedMessages.some((message, index) => message.text !== activeChat.messages[index]?.text);
+  // Handle map hints
+  useEffect(() => {
+    if (!activeChat) return;
     activeChat.messages.forEach((message, index) => {
       if (message.role !== "ai" || messagePlaces[index]) return;
       const { searchHint } = extractMapHint(message.text);
       if (searchHint) void runNearbySearch(index, searchHint);
     });
-
-    if (!changed) return;
-    setActiveChat((prev) => (prev?.id === activeChat.id ? { ...prev, messages: cleanedMessages } : prev));
-    void updateChat(activeChat.id, { messages: cleanedMessages }).catch(() => {});
-  }, [activeChat?.id]);
+  }, [activeChat?.messages.length]);
 
   // Bootstrap: carrega lista quando o user estiver disponivel no contexto de auth.
   // setChatUserId eh chamado antes do listChats() para garantir o ID correto.
@@ -438,7 +443,7 @@ function Chat() {
     })();
   }, [user?.id]);
 
-  // Load messages when active ID changes â€” skip first set (bootstrap handles it).
+  // Load messages when active ID changes — skip first set (bootstrap handles it).
   useEffect(() => {
     if (!activeId) return;
     if (skipFirstActiveIdEffect.current) {
@@ -469,7 +474,7 @@ function Chat() {
     requestAnimationFrame(() => scrollToBottom("auto"));
 
     try {
-      // Build messages for the API â€” Anthropic requires first message to be "user"
+      // Build messages for the API — Anthropic requires first message to be "user"
       const mapped = userMessages
         .filter((m) => m.text.length > 0)
         .map((m) => ({ role: m.role === "ai" ? "assistant" : "user", content: m.text }));
@@ -481,7 +486,7 @@ function Chat() {
       const { data: { session } } = await (await import("@/lib/supabase")).supabase.auth.getSession();
       const token = session?.access_token ?? supabaseKey;
 
-      // Perfil do usuÃ¡rio para personalizar a IA
+      // Perfil do usuário para personalizar a IA
       const ob = user?.onboarding;
       const gps = gpsRef.current;
       const userProfile = ob ? {
@@ -571,7 +576,7 @@ function Chat() {
       // Derive and persist title from first user message if not yet set
       const firstUser = finalMessages.find(m => m.role === "user");
       const titlePatch = (!activeChat.title && firstUser)
-        ? { title: firstUser.text.trim().replace(/\s+/g, " ").slice(0, 40) + (firstUser.text.length > 40 ? "â€¦" : "") }
+        ? { title: firstUser.text.trim().replace(/\s+/g, " ").slice(0, 40) + (firstUser.text.length > 40 ? "…" : "") }
         : {};
       await updateChat(activeChat.id, { messages: finalMessages, ...titlePatch });
 
@@ -586,7 +591,7 @@ function Chat() {
         const msgs = [...prev.messages];
         msgs[msgs.length - 1] = {
           role: "ai",
-          text: "NÃ£o consegui conectar com a IA. Tente novamente.",
+          text: "Não consegui conectar com a IA. Tente novamente.",
         };
         return { ...prev, messages: msgs };
       });
@@ -596,7 +601,7 @@ function Chat() {
     }
   };
 
-  // Verdadeiro se a conversa sÃ³ tem o welcome (nenhuma mensagem do usuÃ¡rio).
+  // Verdadeiro se a conversa só tem o welcome (nenhuma mensagem do usuário).
   const isChatUnused = (chat: ChatSession | null) =>
     !!chat && !chat.messages.some((m) => m.role === "user");
 
@@ -604,7 +609,7 @@ function Chat() {
     if (isChatUnused(activeChat)) {
       setDrawerOpen(false);
       setInput("");
-      triggerFlash("switch", "JÃ¡ estÃ¡ em uma conversa nova");
+      triggerFlash("switch", "Já está em uma conversa nova");
       return;
     }
     try {
@@ -618,7 +623,7 @@ function Chat() {
       setInput("");
       triggerFlash("new", "Nova conversa criada");
     } catch {
-      setChatError("NÃ£o foi possÃ­vel criar a conversa. Verifique sua conexÃ£o.");
+      setChatError("Não foi possível criar a conversa. Verifique sua conexão.");
     }
   };
 
@@ -711,9 +716,9 @@ function Chat() {
         <Link
           to="/"
           aria-label="Voltar"
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-card)] text-[var(--color-foreground)] shadow-[var(--shadow-elev-1)] transition-transform active:scale-95"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-card)] text-[var(--color-foreground)] shadow-[var(--shadow-elev-2)] transition-transform active:scale-90 hover:bg-[var(--color-secondary)]"
         >
-          <ArrowLeft className="h-4 w-4" strokeWidth={2.4} />
+          <ChevronLeft className="h-6 w-6" strokeWidth={2.5} />
         </Link>
         <div className="min-w-0 flex-1">
           <h1
@@ -723,7 +728,7 @@ function Chat() {
             {activeChat ? chatTitle(activeChat) : "Chat IA"}
           </h1>
           <p className="text-[12px] text-[var(--color-muted-foreground)]">
-            Sua dÃºvida, nossa resposta
+            Sua dúvida, nossa resposta
           </p>
         </div>
         {activeChat && (
@@ -739,14 +744,14 @@ function Chat() {
         <button
           type="button"
           onClick={() => setDrawerOpen(true)}
-          aria-label="HistÃ³rico de conversas"
+          aria-label="Histórico de conversas"
           className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-primary-soft)] text-[var(--color-primary)] transition-transform active:scale-95"
         >
           <Menu className="h-[18px] w-[18px]" strokeWidth={2.2} />
         </button>
       </header>
 
-      {/* Toast flutuante de troca/criaÃ§Ã£o */}
+      {/* Toast flutuante de troca/criação */}
       {flash && (
         <div
           role="status"
@@ -763,7 +768,7 @@ function Chat() {
         </div>
       )}
 
-      {/* ConteÃºdo: empty state quando nÃ£o hÃ¡ conversa ativa */}
+      {/* Conteྭo: empty state quando não há conversa ativa */}
       {!activeChat ? (
         <div
           className="flex flex-1 animate-fade-in flex-col items-center justify-center px-6 text-center"
@@ -779,7 +784,7 @@ function Chat() {
             Nenhuma conversa ainda
           </h2>
           <p className="mt-2 max-w-[280px] text-[13.5px] leading-relaxed text-[var(--color-muted-foreground)]">
-            Comece uma conversa com a IA da DEZRAIZ para tirar dÃºvidas sobre
+            Comece uma conversa com a IA da DEZRAIZ para tirar dúvidas sobre
             documentos, impostos, remessas e o dia a dia fora do Brasil.
           </p>
           <button
@@ -849,7 +854,7 @@ function Chat() {
             {messages.length === 1 && (
               <div className="space-y-2.5 pt-5">
                 <p className="px-2 text-[11px] font-bold uppercase tracking-wider text-[var(--color-muted-foreground)]">
-                  SugestÃµes
+                  Sugestões
                 </p>
                 {SUGGESTIONS.map((s) => (
                   <button
@@ -894,7 +899,7 @@ function Chat() {
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={aiStreaming ? "IA respondendoâ€¦" : "Pergunte algo..."}
+                placeholder={aiStreaming ? "IA respondendo…" : "Pergunte algo..."}
                 disabled={aiStreaming}
                 className="h-10 flex-1 bg-transparent text-[14px] outline-none placeholder:text-[var(--color-muted-foreground)] disabled:cursor-not-allowed"
               />
@@ -911,7 +916,7 @@ function Chat() {
         </>
       )}
 
-      {/* Drawer de histÃ³rico */}
+      {/* Drawer de histórico */}
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
         <SheetContent
           side="left"
@@ -922,7 +927,7 @@ function Chat() {
               <Sparkles className="h-4 w-4 text-[var(--color-primary)]" />
               Suas conversas
             </SheetTitle>
-            <SheetDescription className="sr-only">HistÃ³rico de conversas com a IA</SheetDescription>
+            <SheetDescription className="sr-only">Histórico de conversas com a IA</SheetDescription>
           </SheetHeader>
 
           <div className="px-5 py-4">
@@ -1046,7 +1051,7 @@ function Chat() {
         </SheetContent>
       </Sheet>
 
-      {/* ConfirmaÃ§Ã£o de exclusÃ£o */}
+      {/* Confirmação de exclusão */}
       <Dialog
         open={confirmDeleteId !== null}
         onOpenChange={(open) => !open && setConfirmDeleteId(null)}
@@ -1057,7 +1062,7 @@ function Chat() {
               Excluir esta conversa?
             </DialogTitle>
             <DialogDescription className="mt-1.5 text-[13px] text-[var(--color-muted-foreground)]">
-              Esta aÃ§Ã£o nÃ£o pode ser desfeita. As mensagens serÃ£o removidas
+              Esta ação não pode ser desfeita. As mensagens serão removidas
               permanentemente.
             </DialogDescription>
           </div>

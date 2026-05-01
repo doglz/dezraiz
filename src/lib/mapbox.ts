@@ -38,7 +38,8 @@ function kmBetween(lat1: number, lng1: number, lat2: number, lng2: number) {
       Math.cos((lat2 * Math.PI) / 180) *
       Math.sin(dLng / 2) ** 2;
   const km = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return km < 1 ? `${Math.round(km * 1000)}m` : `${km.toFixed(1)}km`;
+  if (km < 0.1) return `${Math.round(km * 1000)}m`;
+  return `${km.toFixed(1)}km`;
 }
 
 export async function searchNearby(
@@ -50,7 +51,7 @@ export async function searchNearby(
   const url =
     `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json` +
     `?proximity=${coords.lng},${coords.lat}` +
-    `&types=poi` +
+    `&types=poi,address` +
     `&limit=5` +
     `&language=pt` +
     `&access_token=${token}`;

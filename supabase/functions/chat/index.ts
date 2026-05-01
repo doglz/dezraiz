@@ -196,7 +196,7 @@ const corsHeaders = {
 };
 
 // Regex to detect [MAPA:category] marker at the very end of the AI response
-const MAPA_RE = /\n?\s*\[MAPA:([a-z_]+)\]\s*$/;
+const MAPA_RE = /\n?\s*\[MAPA:\s*([a-z_]+)\]\s*$/;
 // Tail buffer size — must be >= max marker length "[MAPA:gas_station]" = 19 chars + some whitespace
 const TAIL_SIZE = 40;
 

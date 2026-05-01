@@ -21,11 +21,17 @@ export function RequireAuth({
   }
 
   if (!user) return <Navigate to="/login" />;
-  if (requireOnboarding && !user.onboarding && location.pathname !== "/onboarding") {
+
+  const cleanPath = location.pathname.replace(/\/$/, "");
+  const isAtOnboarding = cleanPath === "/onboarding";
+
+  if (requireOnboarding && !user.onboarding && !isAtOnboarding) {
     return <Navigate to="/onboarding" />;
   }
-  if (user.onboarding && location.pathname === "/onboarding") {
+
+  if (user.onboarding && isAtOnboarding) {
     return <Navigate to="/" />;
   }
+
   return <>{children}</>;
 }
