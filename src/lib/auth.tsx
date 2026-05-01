@@ -282,7 +282,7 @@ function rowToOnboarding(row: OnboardingRow): Onboarding {
   };
 }
 
-async function loadUserData(authUser: AuthUser): Promise<User> {
+async function loadUserData(authUser: AuthUser): Promise<User | null> {
   const [profileResult, onboardingResult] = await Promise.all([
     supabase
       .from("profiles")
@@ -295,6 +295,13 @@ async function loadUserData(authUser: AuthUser): Promise<User> {
       .eq("user_id", authUser.id)
       .maybeSingle(),
   ]);
+
+  // Profile row missing means the user was deleted from the DB while the
+  // JWT was still alive. Force sign-out so they land on /login cleanly.
+  if (profileResult.error?.code === "PGRST116" || (!profileResult.data && !profileResult.error)) {
+    await supabase.auth.signOut();
+    return null;
+  }
 
   const profile = profileResult.data as ProfileRow | null;
   const onboardingRow = onboardingResult.data as OnboardingRow | null;
@@ -327,7 +334,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (session) {
         authUserRef.current = session.user;
         const u = await loadUserData(session.user);
-        setUser(u);
+        setUser(u); // null means auto-signout already triggered
       }
       setLoading(false);
     });
@@ -338,7 +345,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         authUserRef.current = session?.user ?? null;
         if (session) {
           const u = await loadUserData(session.user);
-          setUser(u);
+          setUser(u); // null means auto-signout already triggered
         } else {
           setUser(null);
         }

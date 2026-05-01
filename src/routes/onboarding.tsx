@@ -197,7 +197,7 @@ function clearOnboardingDraft(): void {
 }
 
 function Onboarding() {
-  const { user, setOnboarding, updateProfile } = useAuth();
+  const { user, setOnboarding, updateProfile, logout } = useAuth();
   const navigate = useNavigate();
   const draft = useMemo(() => loadOnboardingDraft(), []);
 
@@ -433,8 +433,16 @@ function Onboarding() {
     <div className="flex min-h-[100dvh] w-full flex-col items-stretch justify-start bg-background p-0 lg:items-center lg:justify-center lg:bg-secondary/40 lg:p-8">
       <div className="mx-auto flex min-h-[100dvh] w-full max-w-md flex-col bg-background px-5 py-7 sm:px-6 lg:min-h-0 lg:max-w-2xl lg:rounded-3xl lg:p-12 lg:shadow-xl">
       {/* Header logo */}
-      <div className="flex items-center justify-center pb-6 pt-2">
+      <div className="flex items-center justify-between pb-6 pt-2">
+        <div className="w-10" />
         <Logo size={32} />
+        <button
+          type="button"
+          onClick={() => logout().catch(() => {})}
+          className="w-10 text-right text-xs text-muted-foreground hover:text-foreground"
+        >
+          Sair
+        </button>
       </div>
 
       {/* Progress */}

@@ -18,6 +18,7 @@ import { Route as PlanosRouteImport } from './routes/planos'
 import { Route as PageRouteImport } from './routes/page'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as MoradiaRouteImport } from './routes/moradia'
+import { Route as MapaRouteImport } from './routes/mapa'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as EsqueciSenhaRouteImport } from './routes/esqueci-senha'
 import { Route as DocumentosRouteImport } from './routes/documentos'
@@ -72,6 +73,11 @@ const MoradiaRoute = MoradiaRouteImport.update({
   path: '/moradia',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MapaRoute = MapaRouteImport.update({
+  id: '/mapa',
+  path: '/mapa',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -122,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/documentos': typeof DocumentosRoute
   '/esqueci-senha': typeof EsqueciSenhaRoute
   '/login': typeof LoginRoute
+  '/mapa': typeof MapaRoute
   '/moradia': typeof MoradiaRoute
   '/onboarding': typeof OnboardingRoute
   '/page': typeof PageRoute
@@ -141,6 +148,7 @@ export interface FileRoutesByTo {
   '/documentos': typeof DocumentosRoute
   '/esqueci-senha': typeof EsqueciSenhaRoute
   '/login': typeof LoginRoute
+  '/mapa': typeof MapaRoute
   '/moradia': typeof MoradiaRoute
   '/onboarding': typeof OnboardingRoute
   '/page': typeof PageRoute
@@ -161,6 +169,7 @@ export interface FileRoutesById {
   '/documentos': typeof DocumentosRoute
   '/esqueci-senha': typeof EsqueciSenhaRoute
   '/login': typeof LoginRoute
+  '/mapa': typeof MapaRoute
   '/moradia': typeof MoradiaRoute
   '/onboarding': typeof OnboardingRoute
   '/page': typeof PageRoute
@@ -182,6 +191,7 @@ export interface FileRouteTypes {
     | '/documentos'
     | '/esqueci-senha'
     | '/login'
+    | '/mapa'
     | '/moradia'
     | '/onboarding'
     | '/page'
@@ -201,6 +211,7 @@ export interface FileRouteTypes {
     | '/documentos'
     | '/esqueci-senha'
     | '/login'
+    | '/mapa'
     | '/moradia'
     | '/onboarding'
     | '/page'
@@ -220,6 +231,7 @@ export interface FileRouteTypes {
     | '/documentos'
     | '/esqueci-senha'
     | '/login'
+    | '/mapa'
     | '/moradia'
     | '/onboarding'
     | '/page'
@@ -240,6 +252,7 @@ export interface RootRouteChildren {
   DocumentosRoute: typeof DocumentosRoute
   EsqueciSenhaRoute: typeof EsqueciSenhaRoute
   LoginRoute: typeof LoginRoute
+  MapaRoute: typeof MapaRoute
   MoradiaRoute: typeof MoradiaRoute
   OnboardingRoute: typeof OnboardingRoute
   PageRoute: typeof PageRoute
@@ -316,6 +329,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MoradiaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mapa': {
+      id: '/mapa'
+      path: '/mapa'
+      fullPath: '/mapa'
+      preLoaderRoute: typeof MapaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -384,6 +404,7 @@ const rootRouteChildren: RootRouteChildren = {
   DocumentosRoute: DocumentosRoute,
   EsqueciSenhaRoute: EsqueciSenhaRoute,
   LoginRoute: LoginRoute,
+  MapaRoute: MapaRoute,
   MoradiaRoute: MoradiaRoute,
   OnboardingRoute: OnboardingRoute,
   PageRoute: PageRoute,
