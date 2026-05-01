@@ -5,11 +5,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const PRICE_IDS: Record<string, string | undefined> = {
-  raizes: Deno.env.get("STRIPE_PRICE_ID_RAIZES"),
-  terra: Deno.env.get("STRIPE_PRICE_ID_TERRA"),
-};
-
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -22,6 +17,11 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
+
+  const PRICE_IDS: Record<string, string | undefined> = {
+    raizes: Deno.env.get("STRIPE_PRICE_ID_RAIZES"),
+    terra: Deno.env.get("STRIPE_PRICE_ID_TERRA"),
+  };
 
   let body: { planKey: string; userId: string; email: string };
   try {
@@ -41,7 +41,7 @@ Deno.serve(async (req) => {
     });
   }
 
-  const origin = req.headers.get("origin") ?? "https://dezraiz.com";
+  const origin = req.headers.get("origin") ?? "https://dezraiz.douglaz2005.workers.dev";
   const stripe = new Stripe(secretKey);
 
   try {
